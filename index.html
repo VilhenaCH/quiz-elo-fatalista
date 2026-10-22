@@ -282,6 +282,38 @@
     .name-input::placeholder { color: #677780; }
     .name-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(99, 231, 255, .1); }
 
+    .photo-picker {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px;
+      border: 1px solid rgba(99, 231, 255, .16);
+      border-radius: 13px;
+      background: rgba(5, 8, 13, .54);
+    }
+
+    .photo-thumb {
+      display: grid;
+      width: 76px;
+      height: 76px;
+      flex: 0 0 76px;
+      overflow: hidden;
+      place-items: center;
+      border: 1px solid #34414b;
+      border-radius: 15px;
+      color: #b6dce4;
+      background: radial-gradient(circle at 30% 25%, rgba(99, 231, 255, .17), transparent 52%), radial-gradient(circle at 75% 80%, rgba(255, 83, 103, .16), transparent 52%), #090d14;
+      font-size: 1.7rem;
+    }
+
+    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-picker-main { min-width: 0; flex: 1; }
+    .photo-file-input { display: block; max-width: 100%; color: #bac8ce; font: inherit; font-size: .78rem; }
+    .photo-file-input::file-selector-button { margin-right: 9px; padding: 7px 10px; border: 1px solid #344550; border-radius: 8px; color: #dff8fc; background: #121c26; font: inherit; cursor: pointer; }
+    .photo-tip { margin: 7px 0 0 !important; color: #8799a2; font-size: .75rem !important; line-height: 1.4; }
+    .photo-clear { margin-top: 6px; padding: 0; border: 0; color: #ff9aa5; background: none; font: inherit; font-size: .75rem; cursor: pointer; }
+    .photo-status { display: block; min-height: 1.2em; margin-top: 3px; color: var(--cyan); font-size: .72rem; }
+
     .mode-toggle {
       display: flex;
       align-items: flex-start;
@@ -654,7 +686,13 @@
     .debate-stat strong { margin-right: 4px; color: var(--cyan); font-variant-numeric: tabular-nums; }
     .debate-summary .debate-note { margin-top: 13px; color: #7f9098; font-size: .75rem; }
 
-    .result-name { margin: -6px 0 13px; color: #9fadb5; font-size: .9rem; }
+    .result-character { display: flex; align-items: center; gap: 15px; margin: 0 0 18px; }
+    .result-portrait { position: relative; display: grid; width: 82px; height: 82px; flex: 0 0 82px; overflow: hidden; place-items: center; border: 2px solid transparent; border-radius: 18px; background: linear-gradient(#090d14, #090d14) padding-box, linear-gradient(135deg, var(--cyan), #2b3541 50%, var(--red)) border-box; }
+    .result-portrait img { width: 100%; height: 100%; object-fit: cover; }
+    .result-portrait-placeholder { color: #c8e1e7; font-size: 1.6rem; }
+    .result-character-copy { min-width: 0; }
+    .result-character-label { margin: 0 0 2px; color: #8598a1; font-size: .68rem; font-weight: 700; letter-spacing: .12em; }
+    .result-name { margin: 0; color: #9fadb5; font-size: .9rem; }
     .result-name strong { color: #e4f4f7; font-weight: 650; }
 
     .result-panel { padding: clamp(23px, 5vw, 42px); }
@@ -1023,6 +1061,18 @@
           <label class="field-label" for="player-name">Nome do personagem (ou o seu)</label>
           <input class="name-input" id="player-name" type="text" maxlength="40" autocomplete="off" placeholder="Ex.: Cael">
         </div>
+        <div>
+          <label class="field-label" for="character-photo">Foto do personagem <span style="color:#84959d;font-weight:400">(opcional)</span></label>
+          <div class="photo-picker">
+            <div class="photo-thumb"><img id="character-photo-preview" alt="Prévia da foto do personagem" hidden><span id="photo-placeholder" aria-hidden="true">✦</span></div>
+            <div class="photo-picker-main">
+              <input class="photo-file-input" id="character-photo" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" aria-describedby="photo-help photo-status">
+              <p class="photo-tip" id="photo-help">A foto fica neste dispositivo e aparece junto ao veredito e no card.</p>
+              <button class="photo-clear" id="remove-photo-button" type="button" hidden>Remover foto</button>
+              <span class="photo-status" id="photo-status" role="status" aria-live="polite"></span>
+            </div>
+          </div>
+        </div>
         <label class="mode-toggle" for="debate-mode">
           <input id="debate-mode" type="checkbox">
           <span class="mode-toggle-copy"><strong>Ativar modo debate</strong><span>Depois de cada escolha, responda a um argumento contrário. No resultado, veja como ele lida com críticas.</span></span>
@@ -1075,7 +1125,13 @@
 
     <section id="result-screen" class="panel result-panel" hidden aria-live="polite">
       <p class="eyebrow"><img class="eyebrow-icon" src="assets/game-icons/life-in-the-balance.png" alt=""> Leitura aproximada</p>
-      <p class="result-name" id="result-name" hidden></p>
+      <div class="result-character" id="result-character" hidden>
+        <div class="result-portrait"><img id="result-photo" alt="" hidden><span class="result-portrait-placeholder" id="result-photo-placeholder" aria-hidden="true">✦</span></div>
+        <div class="result-character-copy">
+          <p class="result-character-label">PERSONAGEM</p>
+          <p class="result-name" id="result-name" hidden></p>
+        </div>
+      </div>
       <div id="verdict" class="verdict"></div>
       <h2 id="result-title" tabindex="-1"></h2>
       <p id="result-summary" class="result-summary"></p>
@@ -1130,7 +1186,7 @@
       </details>
       <section class="share-card-section" id="share-card-section" hidden aria-labelledby="share-card-title">
         <h3 id="share-card-title">Seu card de resultado</h3>
-        <p>O veredito e as escolhas ficam reunidos em uma imagem; no modo debate, ela inclui também suas réplicas.</p>
+        <p>Um resumo visual do veredito, da inclinação e das principais reflexões. A foto do personagem também aparece no card.</p>
         <div class="share-card-frame"><canvas id="share-card-canvas" class="share-card-preview" aria-label="Card compartilhável com seu veredito e as respostas"></canvas></div>
         <div class="result-actions share-card-actions">
           <button class="button" id="share-card-button" type="button">Compartilhar card</button>
@@ -1648,11 +1704,20 @@
       const progressFill = document.getElementById("progress-fill");
       const playerNameInput = document.getElementById("player-name");
       const debateModeInput = document.getElementById("debate-mode");
+      const photoInput = document.getElementById("character-photo");
+      const photoPreview = document.getElementById("character-photo-preview");
+      const photoPlaceholder = document.getElementById("photo-placeholder");
+      const removePhotoButton = document.getElementById("remove-photo-button");
+      const photoStatus = document.getElementById("photo-status");
       const answers = new Array(questions.length).fill(null);
       const debateResponses = new Array(questions.length).fill(null);
       let currentIndex = 0;
       let resultSummaryText = "";
       let playerName = "";
+      let playerPhoto = null;
+      let playerPhotoUrl = "";
+      let pendingPhotoUrl = "";
+      let photoLoadToken = 0;
       let debateModeEnabled = false;
 
       function showScreen(screen) {
@@ -1893,184 +1958,247 @@
         return y + lines.length * lineHeight;
       }
 
-      function renderShareCard(score, verdict, answeredIndexes) {
+
+      function buildCardReflections(axisScores, score, debateEntries) {
+        const ranked = Object.keys(axes).filter(function (key) { return axisScores[key] !== null; }).sort(function (a, b) {
+          return Math.abs(axisScores[b]) - Math.abs(axisScores[a]);
+        });
+        const strongest = ranked[0];
+        const strongestValue = strongest ? axisScores[strongest] : 0;
+        const strongestAxis = strongest ? axes[strongest] : null;
+        const primaryText = !strongestAxis ? "Ainda há poucas respostas para reconhecer uma prioridade." : strongestValue > 20 ? "Aposta em “" + strongestAxis.right + "”." : strongestValue < -20 ? "Protege “" + strongestAxis.left + "”." : "Oscila entre “" + strongestAxis.left + "” e “" + strongestAxis.right + "”.";
+        const reflections = [{ label: "Convicção central", text: primaryText, tone: score > 0 ? "eternal" : score < 0 ? "fatalist" : "mixed" }];
+        const opposing = ranked.filter(function (key) {
+          return Math.abs(axisScores[key]) >= 25 && ((score > 10 && axisScores[key] < -25) || (score < -10 && axisScores[key] > 25));
+        }).sort(function (a, b) { return Math.abs(axisScores[b]) - Math.abs(axisScores[a]); })[0];
+        if (opposing) {
+          const sideText = axisScores[opposing] > 0 ? axes[opposing].right : axes[opposing].left;
+          reflections.push({
+            label: "Onde surge o conflito",
+            text: "Mesmo pendendo ao " + (score > 0 ? "Elo Eterno" : "Fatalistas") + ", em “" + axes[opposing].label + "” protege “" + sideText + "”.",
+            tone: "mixed"
+          });
+        } else if (score > 10) {
+          reflections.push({ label: "Onde surge o conflito", text: "Quer outra chance, mas precisa reconhecer quando insistir transforma vidas em tentativas.", tone: "mixed" });
+        } else if (score < -10) {
+          reflections.push({ label: "Onde surge o conflito", text: "Resiste a ciclos impostos sem decidir por todos que nenhuma nova chance deve existir.", tone: "mixed" });
+        } else {
+          reflections.push({ label: "Onde surge o conflito", text: "Pesa entre a chance de corrigir uma perda e o valor de uma vida já vivida.", tone: "mixed" });
+        }
+        if (debateEntries.length) {
+          const counts = { reconsider: 0, condition: 0, defend: 0 };
+          debateEntries.forEach(function (style) { counts[style] += 1; });
+          const maximum = Math.max(counts.reconsider, counts.condition, counts.defend);
+          const dominant = Object.keys(counts).filter(function (style) { return counts[style] === maximum; });
+          let text;
+          if (dominant.length > 1) text = "Alterna entre rever a posição, estabelecer limites e defendê-la.";
+          else if (dominant[0] === "reconsider") text = "Reexamina as próprias premissas quando encontra resistência.";
+          else if (dominant[0] === "condition") text = "Procura consentimento, critérios e limites antes de aceitar um caminho.";
+          else text = "Sustenta a prioridade escolhida mesmo diante de críticas.";
+          reflections.push({ label: "Diante do contraponto", text: text, tone: "mixed" });
+        } else {
+          let question;
+          if (score > 10) question = "Até onde insistir em outra chance antes que ela apague o valor do que já foi vivido?";
+          else if (score < -10) question = "Como quebrar um ciclo imposto sem impor também o fim aos demais?";
+          else question = "O que faria escolher entre tentar outra vez e honrar o que já foi vivido?";
+          reflections.push({ label: "Pergunta que fica", text: question, tone: "mixed" });
+        }
+        return reflections.slice(0, 3);
+      }
+
+      function drawCardPortrait(context, x, y, size) {
+        cardRoundRect(context, x, y, size, size, 28);
+        context.save();
+        context.clip();
+        if (playerPhoto) {
+          const sourceWidth = playerPhoto.naturalWidth || playerPhoto.width;
+          const sourceHeight = playerPhoto.naturalHeight || playerPhoto.height;
+          const scale = Math.max(size / sourceWidth, size / sourceHeight);
+          const drawWidth = sourceWidth * scale;
+          const drawHeight = sourceHeight * scale;
+          context.drawImage(playerPhoto, x + (size - drawWidth) / 2, y + (size - drawHeight) / 2, drawWidth, drawHeight);
+        } else {
+          const fill = context.createLinearGradient(x, y, x + size, y + size);
+          fill.addColorStop(0, "#10242d");
+          fill.addColorStop(.5, "#10141d");
+          fill.addColorStop(1, "#2a1219");
+          context.fillStyle = fill;
+          context.fillRect(x, y, size, size);
+          context.beginPath();
+          context.arc(x + size / 2, y + size / 2, size * .31, 0, Math.PI * 2);
+          context.strokeStyle = "rgba(99, 231, 255, .68)";
+          context.lineWidth = 3;
+          context.stroke();
+          context.beginPath();
+          context.arc(x + size / 2, y + size / 2, size * .23, 0, Math.PI * 2);
+          context.strokeStyle = "rgba(255, 83, 103, .72)";
+          context.lineWidth = 3;
+          context.stroke();
+          context.beginPath();
+          context.arc(x + size / 2, y + size / 2, 7, 0, Math.PI * 2);
+          context.fillStyle = "#e8fbff";
+          context.fill();
+        }
+        context.restore();
+        cardRoundRect(context, x, y, size, size, 28);
+        const border = context.createLinearGradient(x, y, x + size, y + size);
+        border.addColorStop(0, "#63e7ff");
+        border.addColorStop(.52, "#34434c");
+        border.addColorStop(1, "#ff5367");
+        context.strokeStyle = border;
+        context.lineWidth = 4;
+        context.stroke();
+      }
+
+      function renderShareCard(score, verdict, reflections) {
         const canvas = document.getElementById("share-card-canvas");
         const context = canvas.getContext("2d");
         const width = 1080;
         const pad = 70;
-        const textWidth = width - pad * 2;
+        const contentWidth = width - pad * 2;
+        const portraitSize = 210;
+        const portraitX = pad;
+        const portraitY = 110;
+        const textX = portraitX + portraitSize + 40;
+        const textWidth = width - pad - textX;
         const playerLabel = playerName || "Uma vontade entre dois mundos";
-        const rows = answeredIndexes.map(function (index) {
-          const question = questions[index];
-          const answer = question.answers.find(function (item) { return item.value === answers[index]; });
-          const style = debateModeEnabled ? debateResponses[index] : null;
-          const reply = style ? getDebateReplyText(index, style) : "";
-          context.font = "500 20px Inter, system-ui, sans-serif";
-          const promptLines = wrapCardText(context, question.prompt, textWidth - 42);
-          context.font = "600 22px Inter, system-ui, sans-serif";
-          const answerLines = wrapCardText(context, answer.text, textWidth - 42);
-          context.font = "500 20px Inter, system-ui, sans-serif";
-          const replyLines = reply ? wrapCardText(context, reply, textWidth - 42) : [];
-          const height = 30 + 16 + promptLines.length * 27 + 13 + 14 + answerLines.length * 28 + (reply ? 12 + 14 + replyLines.length * 26 : 0) + 23;
-          return { index: index, question: question, answer: answer, style: style, reply: reply, promptLines: promptLines, answerLines: answerLines, replyLines: replyLines, height: height };
+        context.font = "700 43px Georgia, serif";
+        const nameLines = wrapCardText(context, playerLabel, textWidth);
+        context.font = "700 24px Inter, system-ui, sans-serif";
+        const titleLines = wrapCardText(context, verdict.title, textWidth);
+        const rows = reflections.map(function (reflection) {
+          context.font = "500 21px Inter, system-ui, sans-serif";
+          const lines = wrapCardText(context, reflection.text, contentWidth - 44);
+          return { label: reflection.label, lines: lines, tone: reflection.tone, height: 77 + lines.length * 29 };
         });
 
-        context.font = "700 43px Georgia, serif";
-        const nameLines = wrapCardText(context, playerLabel, textWidth - 26);
-        context.font = "700 25px Inter, system-ui, sans-serif";
-        const titleLines = wrapCardText(context, verdict.title, textWidth);
-        context.font = "400 19px Inter, system-ui, sans-serif";
-        const summaryLines = wrapCardText(context, verdict.summary, textWidth);
-        const headerHeight = 332 + nameLines.length * 51 + titleLines.length * 34 + summaryLines.length * 27;
-        const rowGaps = Math.max(0, rows.length - 1) * 13;
-        const footerHeight = 126;
-        const height = Math.ceil(headerHeight + rows.reduce(function (sum, row) { return sum + row.height; }, 0) + rowGaps + footerHeight);
+        const nameBottom = 151 + nameLines.length * 49;
+        const pillY = nameBottom + 17;
+        const titleY = pillY + 58;
+        const profileBottom = Math.max(portraitY + portraitSize, titleY + titleLines.length * 31);
+        const scoreY = profileBottom + 54;
+        const reflectionsTitleY = scoreY + 106;
+        const rowsStartY = reflectionsTitleY + 33;
+        const rowGaps = Math.max(0, rows.length - 1) * 14;
+        const footerHeight = 104;
+        const height = Math.ceil(rowsStartY + rows.reduce(function (sum, row) { return sum + row.height; }, 0) + rowGaps + footerHeight);
         canvas.width = width;
         canvas.height = height;
 
         const background = context.createLinearGradient(0, 0, width, height);
         background.addColorStop(0, "#080d15");
-        background.addColorStop(.52, "#08090f");
+        background.addColorStop(.54, "#080a10");
         background.addColorStop(1, "#10090e");
         context.fillStyle = background;
         context.fillRect(0, 0, width, height);
-        const cyanGlow = context.createRadialGradient(70, 20, 0, 70, 20, 720);
-        cyanGlow.addColorStop(0, "rgba(44, 204, 232, .18)");
+        const cyanGlow = context.createRadialGradient(75, 45, 0, 75, 45, 700);
+        cyanGlow.addColorStop(0, "rgba(44, 204, 232, .2)");
         cyanGlow.addColorStop(1, "rgba(44, 204, 232, 0)");
         context.fillStyle = cyanGlow;
-        context.fillRect(0, 0, width, height * .56);
-        const redGlow = context.createRadialGradient(width - 50, 135, 0, width - 50, 135, 700);
-        redGlow.addColorStop(0, "rgba(235, 62, 87, .14)");
+        context.fillRect(0, 0, width, height * .54);
+        const redGlow = context.createRadialGradient(width - 70, 190, 0, width - 70, 190, 660);
+        redGlow.addColorStop(0, "rgba(235, 62, 87, .17)");
         redGlow.addColorStop(1, "rgba(235, 62, 87, 0)");
         context.fillStyle = redGlow;
         context.fillRect(0, 0, width, height * .55);
         cardRoundRect(context, 24, 24, width - 48, height - 48, 28);
-        context.strokeStyle = "rgba(169, 203, 218, .28)";
+        context.strokeStyle = "rgba(169, 203, 218, .3)";
         context.lineWidth = 2;
         context.stroke();
 
         const eternal = verdict.tone === "eternal";
         const fatalist = verdict.tone === "fatalist";
         const accent = eternal ? "#71eaff" : fatalist ? "#ff7789" : "#d4e1e7";
-        let y = 68;
         context.textAlign = "left";
         context.textBaseline = "alphabetic";
         context.fillStyle = "#aac3cc";
         context.font = "700 17px Inter, system-ui, sans-serif";
-        context.fillText("ELO ETERNO   /   FATALISTAS", pad, y);
-        y += 37;
+        context.fillText("ELO ETERNO   /   FATALISTAS", pad, 70);
+        drawCardPortrait(context, portraitX, portraitY, portraitSize);
+
         context.fillStyle = "#f0f8fb";
         context.font = "700 43px Georgia, serif";
-        y = drawCardLines(context, nameLines, pad, y, 51) + 19;
+        drawCardLines(context, nameLines, textX, 151, 49);
 
-        context.font = "700 16px Inter, system-ui, sans-serif";
-        const pillWidth = Math.min(textWidth, context.measureText(verdict.label).width + 34);
-        cardRoundRect(context, pad, y - 23, pillWidth, 39, 19);
-        context.fillStyle = eternal ? "rgba(99, 231, 255, .14)" : fatalist ? "rgba(255, 83, 103, .14)" : "rgba(196, 213, 221, .12)";
+        context.font = "700 15px Inter, system-ui, sans-serif";
+        const pillWidth = Math.min(textWidth, context.measureText(verdict.label).width + 32);
+        cardRoundRect(context, textX, pillY - 23, pillWidth, 36, 18);
+        context.fillStyle = eternal ? "rgba(99, 231, 255, .14)" : fatalist ? "rgba(255, 83, 103, .15)" : "rgba(196, 213, 221, .13)";
         context.fill();
-        context.strokeStyle = eternal ? "rgba(99, 231, 255, .48)" : fatalist ? "rgba(255, 83, 103, .46)" : "rgba(196, 213, 221, .3)";
+        context.strokeStyle = eternal ? "rgba(99, 231, 255, .48)" : fatalist ? "rgba(255, 83, 103, .5)" : "rgba(196, 213, 221, .3)";
         context.stroke();
         context.fillStyle = accent;
-        context.fillText(verdict.label.toUpperCase(), pad + 17, y + 3);
-        y += 45;
+        context.fillText(verdict.label.toUpperCase(), textX + 16, pillY);
 
         context.fillStyle = "#e6eff2";
-        context.font = "700 25px Inter, system-ui, sans-serif";
-        y = drawCardLines(context, titleLines, pad, y, 34) + 8;
-        context.fillStyle = "#aebdc4";
-        context.font = "400 19px Inter, system-ui, sans-serif";
-        y = drawCardLines(context, summaryLines, pad, y, 27) + 22;
+        context.font = "700 24px Inter, system-ui, sans-serif";
+        drawCardLines(context, titleLines, textX, titleY, 31);
 
         context.fillStyle = "#aebdc4";
         context.font = "700 15px Inter, system-ui, sans-serif";
-        context.fillText("INCLINAÇÃO GERAL", pad, y);
+        context.fillText("INCLINAÇÃO GERAL", pad, scoreY);
         context.textAlign = "right";
         context.fillStyle = accent;
         const scoreText = score > 0 ? "+" + score + " · ELO ETERNO" : score < 0 ? score + " · FATALISTAS" : "0 · EQUILÍBRIO";
-        context.fillText(scoreText, width - pad, y);
+        context.fillText(scoreText, width - pad, scoreY);
         context.textAlign = "left";
-        y += 17;
+        const trackY = scoreY + 18;
         const trackGradient = context.createLinearGradient(pad, 0, width - pad, 0);
         trackGradient.addColorStop(0, "#ff5367");
         trackGradient.addColorStop(.5, "#58616b");
         trackGradient.addColorStop(1, "#63e7ff");
-        cardRoundRect(context, pad, y, textWidth, 11, 6);
+        cardRoundRect(context, pad, trackY, contentWidth, 11, 6);
         context.fillStyle = trackGradient;
         context.fill();
-        const markerX = pad + textWidth * ((score + 100) / 200);
+        const markerX = pad + contentWidth * ((score + 100) / 200);
         context.beginPath();
-        context.arc(markerX, y + 5.5, 10, 0, Math.PI * 2);
+        context.arc(markerX, trackY + 5.5, 10, 0, Math.PI * 2);
         context.fillStyle = "#f5fbfd";
         context.fill();
         context.lineWidth = 4;
         context.strokeStyle = score < 0 ? "#ff7184" : score > 0 ? "#63e7ff" : "#cbd7dc";
         context.stroke();
-        y += 34;
-        context.font = "500 15px Inter, system-ui, sans-serif";
         context.fillStyle = "#92a5ae";
-        context.fillText("FATALISTAS", pad, y);
+        context.font = "500 15px Inter, system-ui, sans-serif";
+        context.fillText("FATALISTAS", pad, trackY + 39);
         context.textAlign = "center";
-        context.fillText("ENTRE OS DOIS", width / 2, y);
+        context.fillText("ENTRE OS DOIS", width / 2, trackY + 39);
         context.textAlign = "right";
-        context.fillText("ELO ETERNO", width - pad, y);
+        context.fillText("ELO ETERNO", width - pad, trackY + 39);
         context.textAlign = "left";
-        y += 58;
+
         context.fillStyle = "#eaf4f7";
         context.font = "700 20px Inter, system-ui, sans-serif";
-        context.fillText("RESPOSTAS DA PARTIDA", pad, y);
-        context.textAlign = "right";
-        context.fillStyle = "#93a8b1";
-        context.font = "500 16px Inter, system-ui, sans-serif";
-        context.fillText(answeredIndexes.length + " / " + questions.length + (debateModeEnabled ? " · MODO DEBATE" : " · DILEMAS"), width - pad, y);
-        context.textAlign = "left";
-        y += 24;
-
-        rows.forEach(function (row, rowIndex) {
-          const boxX = pad - 7;
-          const boxWidth = textWidth + 14;
-          cardRoundRect(context, boxX, y, boxWidth, row.height, 16);
-          context.fillStyle = "rgba(14, 21, 30, .82)";
+        context.fillText("O QUE AS RESPOSTAS REVELAM", pad, reflectionsTitleY);
+        let y = rowsStartY;
+        rows.forEach(function (row, index) {
+          cardRoundRect(context, pad, y, contentWidth, row.height, 16);
+          context.fillStyle = "rgba(14, 21, 30, .88)";
           context.fill();
-          context.strokeStyle = "rgba(139, 166, 178, .19)";
+          context.strokeStyle = "rgba(139, 166, 178, .2)";
           context.lineWidth = 1;
           context.stroke();
-          let rowY = y + 29;
-          context.fillStyle = "#93a9b2";
-          context.font = "700 15px Inter, system-ui, sans-serif";
-          context.fillText(String(row.index + 1).padStart(2, "0") + "   ·   " + axes[row.question.axis].label.toUpperCase(), pad + 12, rowY);
-          rowY += 31;
-          context.fillStyle = "#cad7dc";
-          context.font = "500 20px Inter, system-ui, sans-serif";
-          rowY = drawCardLines(context, row.promptLines, pad + 12, rowY, 27) + 10;
-          context.fillStyle = "#93a9b2";
-          context.font = "700 13px Inter, system-ui, sans-serif";
-          context.fillText("ESCOLHEU", pad + 12, rowY);
-          rowY += 21;
-          context.fillStyle = row.answer.value > 0 ? "#9cefff" : row.answer.value < 0 ? "#ff9aa7" : "#e0e8eb";
-          context.font = "600 22px Inter, system-ui, sans-serif";
-          rowY = drawCardLines(context, row.answerLines, pad + 12, rowY, 28);
-          if (row.reply) {
-            rowY += 9;
-            context.fillStyle = "#93a9b2";
-            context.font = "700 13px Inter, system-ui, sans-serif";
-            context.fillText("NO CONTRAPONTO · " + debateStyleLabels[row.style].toUpperCase(), pad + 12, rowY);
-            rowY += 21;
-            context.fillStyle = "#d7e2e6";
-            context.font = "500 20px Inter, system-ui, sans-serif";
-            drawCardLines(context, row.replyLines, pad + 12, rowY, 26);
-          }
-          y += row.height + (rowIndex < rows.length - 1 ? 13 : 0);
+          cardRoundRect(context, pad, y, 5, row.height, 3);
+          context.fillStyle = row.tone === "eternal" ? "#63e7ff" : row.tone === "fatalist" ? "#ff5367" : "#a8bac2";
+          context.fill();
+          context.fillStyle = "#95aab3";
+          context.font = "700 14px Inter, system-ui, sans-serif";
+          context.fillText(row.label.toUpperCase(), pad + 20, y + 29);
+          context.fillStyle = "#e2edf1";
+          context.font = "500 21px Inter, system-ui, sans-serif";
+          drawCardLines(context, row.lines, pad + 20, y + 62, 29);
+          y += row.height + (index < rows.length - 1 ? 14 : 0);
         });
 
-        y = height - 64;
+        y = height - 56;
         context.strokeStyle = "rgba(143, 174, 187, .22)";
         context.beginPath();
-        context.moveTo(pad, y - 22);
-        context.lineTo(width - pad, y - 22);
+        context.moveTo(pad, y - 24);
+        context.lineTo(width - pad, y - 24);
         context.stroke();
         context.fillStyle = "#91a5ae";
         context.font = "500 14px Inter, system-ui, sans-serif";
-        context.fillText("O QUE VOCÊ ESCOLHERIA PRESERVAR?   ·   TESTE DE PERSONAGEM", pad, y);
+        context.fillText("TESTE DE PERSONAGEM   ·   " + answers.filter(function (value) { return value !== null; }).length + " RESPOSTAS", pad, y);
         context.textAlign = "right";
         context.fillStyle = "#c2d2d8";
         context.fillText("RECOMEÇO  ◇  MEMÓRIA", width - pad, y);
@@ -2104,6 +2232,9 @@
 
       function finishTest() {
         const resultName = document.getElementById("result-name");
+        const resultCharacter = document.getElementById("result-character");
+        const resultPhoto = document.getElementById("result-photo");
+        const resultPhotoPlaceholder = document.getElementById("result-photo-placeholder");
         if (playerName) {
           const prefix = document.createElement("span");
           prefix.textContent = "Leitura de ";
@@ -2113,6 +2244,18 @@
           resultName.hidden = false;
         } else {
           resultName.hidden = true;
+        }
+        resultCharacter.hidden = !(playerName || playerPhoto);
+        if (playerPhoto) {
+          resultPhoto.src = playerPhotoUrl;
+          resultPhoto.alt = playerName ? "Retrato de " + playerName : "Foto do personagem";
+          resultPhoto.hidden = false;
+          resultPhotoPlaceholder.hidden = true;
+        } else {
+          resultPhoto.removeAttribute("src");
+          resultPhoto.alt = "";
+          resultPhoto.hidden = true;
+          resultPhotoPlaceholder.hidden = false;
         }
 
         const answeredIndexes = answers.map(function (value, index) {
@@ -2254,7 +2397,7 @@
           document.getElementById("debate-stats").replaceChildren();
         }
         resultSummaryText = (playerName ? "Personagem: " + playerName + "\n" : "") + verdict.label + "\n" + verdict.title + "\n" + verdict.summary + "\nInclinação geral: " + (score > 0 ? "Elo Eterno +" + score : score < 0 ? "Fatalistas " + score : "equilíbrio") + ".\n" + tensionText + debateSummaryText + "\n\nRESPOSTAS DA PARTIDA\n" + buildAnswerTranscript(answeredIndexes);
-        renderShareCard(score, verdict, answeredIndexes);
+        renderShareCard(score, verdict, buildCardReflections(axisScores, score, debateEntries));
         document.getElementById("share-card-section").hidden = false;
         showScreen("result");
       }
@@ -2292,6 +2435,72 @@
         showScreen("quiz");
         renderQuestion();
         document.getElementById("question-title").focus();
+      });
+
+      photoInput.addEventListener("change", function () {
+        const file = photoInput.files && photoInput.files[0];
+        if (!file) return;
+        const startButton = document.getElementById("start-button");
+        const allowedTypes = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/avif"];
+        if (allowedTypes.indexOf(file.type) < 0) {
+          photoLoadToken += 1;
+          if (pendingPhotoUrl) URL.revokeObjectURL(pendingPhotoUrl);
+          pendingPhotoUrl = "";
+          startButton.disabled = false;
+          photoStatus.textContent = "Escolha uma imagem PNG, JPG, WebP, GIF ou AVIF.";
+          photoInput.value = "";
+          return;
+        }
+        if (pendingPhotoUrl) URL.revokeObjectURL(pendingPhotoUrl);
+        const nextUrl = URL.createObjectURL(file);
+        pendingPhotoUrl = nextUrl;
+        startButton.disabled = true;
+        photoStatus.textContent = "Carregando a foto…";
+        const token = ++photoLoadToken;
+        const image = new Image();
+        image.onload = function () {
+          if (token !== photoLoadToken) {
+            URL.revokeObjectURL(nextUrl);
+            return;
+          }
+          if (playerPhotoUrl) URL.revokeObjectURL(playerPhotoUrl);
+          playerPhoto = image;
+          playerPhotoUrl = nextUrl;
+          pendingPhotoUrl = "";
+          photoPreview.src = nextUrl;
+          photoPreview.alt = playerName ? "Prévia da foto de " + playerName : "Prévia da foto do personagem";
+          photoPreview.hidden = false;
+          photoPlaceholder.hidden = true;
+          removePhotoButton.hidden = false;
+          photoStatus.textContent = "Foto pronta. Ela será usada apenas nesta página e no card.";
+          startButton.disabled = false;
+        };
+        image.onerror = function () {
+          URL.revokeObjectURL(nextUrl);
+          if (token === photoLoadToken) {
+            pendingPhotoUrl = "";
+            photoInput.value = "";
+            photoStatus.textContent = "Não foi possível abrir esta imagem. Escolha outro arquivo.";
+            startButton.disabled = false;
+          }
+        };
+        image.src = nextUrl;
+      });
+
+      removePhotoButton.addEventListener("click", function () {
+        photoLoadToken += 1;
+        document.getElementById("start-button").disabled = false;
+        if (pendingPhotoUrl) URL.revokeObjectURL(pendingPhotoUrl);
+        if (playerPhotoUrl) URL.revokeObjectURL(playerPhotoUrl);
+        pendingPhotoUrl = "";
+        playerPhotoUrl = "";
+        playerPhoto = null;
+        photoPreview.removeAttribute("src");
+        photoPreview.hidden = true;
+        photoPlaceholder.hidden = false;
+        removePhotoButton.hidden = true;
+        photoInput.value = "";
+        photoStatus.textContent = "Foto removida.";
       });
 
       backButton.addEventListener("click", function () {
@@ -2396,3 +2605,4 @@
   </script>
 </body>
 </html>
+
