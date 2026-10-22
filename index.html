@@ -849,6 +849,29 @@
       margin-top: 27px;
     }
 
+    .share-card-section {
+      margin-top: 34px;
+      padding: 22px;
+      border: 1px solid rgba(130, 162, 177, .2);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(15, 26, 34, .88), rgba(15, 15, 23, .9));
+    }
+
+    .share-card-section h3 { margin-bottom: 5px; }
+    .share-card-section > p { margin-bottom: 17px; color: var(--muted); font-size: .9rem; }
+    .share-card-frame {
+      width: min(100%, 480px);
+      margin: 0 auto;
+      overflow: hidden;
+      border: 1px solid rgba(139, 174, 191, .28);
+      border-radius: 15px;
+      background: #070a10;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .38), 0 0 35px rgba(93, 212, 237, .08);
+    }
+
+    .share-card-preview { display: block; width: 100%; height: auto; }
+    .share-card-actions { justify-content: center; margin-top: 17px; }
+
     .footnote {
       max-width: 800px;
       margin: 22px auto 0;
@@ -968,6 +991,7 @@
       .ideology-card { padding: 16px; }
       .counterpoint-card { padding: 17px 18px; }
       .debate-summary { padding: 17px; }
+      .share-card-section { padding: 16px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1005,10 +1029,10 @@
         </label>
       </div>
       <div class="meta-row">
-        <span class="meta-item"><img src="assets/game-icons/gamepad.png" alt="">16 dilemas</span>
-        <span class="meta-item"><img src="assets/game-icons/star.png" alt="">Sem resposta certa</span>
+        <span class="meta-item"><img src="assets/game-icons/journey.png" alt="">16 dilemas</span>
+        <span class="meta-item"><img src="assets/game-icons/scales.png" alt="">Sem resposta certa</span>
       </div>
-      <button class="button" id="start-button" type="button"><span class="button-content"><img class="button-icon" src="assets/game-icons/joystick.png" alt="">Iniciar jornada</span></button>
+      <button class="button" id="start-button" type="button"><span class="button-content"><img class="button-icon" src="assets/game-icons/portal.png" alt="">Iniciar jornada</span></button>
     </section>
 
     <section id="quiz-screen" class="panel quiz-panel" hidden aria-label="Perguntas e modo debate">
@@ -1050,7 +1074,7 @@
     </section>
 
     <section id="result-screen" class="panel result-panel" hidden aria-live="polite">
-      <p class="eyebrow"><img class="eyebrow-icon" src="assets/game-icons/star.png" alt=""> Leitura aproximada</p>
+      <p class="eyebrow"><img class="eyebrow-icon" src="assets/game-icons/life-in-the-balance.png" alt=""> Leitura aproximada</p>
       <p class="result-name" id="result-name" hidden></p>
       <div id="verdict" class="verdict"></div>
       <h2 id="result-title" tabindex="-1"></h2>
@@ -1104,14 +1128,23 @@
         </div>
         <p class="footnote">Os dois lados podem agir por amor à mesma pessoa. O Elo teme perder a chance de salvá-la; o Fatalista teme que a tentativa apague a vida que ela já teve. Nenhum lado é uma raça, um inimigo natural ou uma resposta moral obrigatória.</p>
       </details>
+      <section class="share-card-section" id="share-card-section" hidden aria-labelledby="share-card-title">
+        <h3 id="share-card-title">Seu card de resultado</h3>
+        <p>O veredito e as escolhas ficam reunidos em uma imagem; no modo debate, ela inclui também suas réplicas.</p>
+        <div class="share-card-frame"><canvas id="share-card-canvas" class="share-card-preview" aria-label="Card compartilhável com seu veredito e as respostas"></canvas></div>
+        <div class="result-actions share-card-actions">
+          <button class="button" id="share-card-button" type="button">Compartilhar card</button>
+          <button class="button secondary" id="download-card-button" type="button">Baixar imagem PNG</button>
+        </div>
+      </section>
       <div class="result-actions">
-        <button class="button" id="copy-button" type="button">Copiar veredito</button>
+        <button class="button secondary" id="copy-button" type="button">Copiar respostas</button>
         <button class="button secondary" id="edit-button" type="button">Rever respostas</button>
         <button class="button quiet" id="restart-button" type="button">Recomeçar</button>
       </div>
-      <p class="toast" id="copy-status" aria-live="polite"></p>
+      <p class="toast" id="result-status" aria-live="polite"></p>
     </section>
-    <p class="asset-credit">Ícones de jogo por <a href="https://kenney.nl/assets/game-icons" target="_blank" rel="noreferrer">Kenney</a>, disponibilizados sob CC0.</p>
+    <p class="asset-credit">Ícones de <a href="https://game-icons.net" target="_blank" rel="noreferrer">Game-icons.net</a>: feitos por Lorc (cycle, hourglass, scales, life-in-the-balance, checked-shield, portal, journey) e Delapouite (extra-time, finish-line, backward-time, shield-opposition), sob CC BY 3.0. Créditos e licença incluídos no pacote.</p>
   </main>
 
   <script>
@@ -1655,7 +1688,7 @@
           button.setAttribute("data-value", String(answer.value));
           button.setAttribute("data-pole", answer.value > 0 ? "eternal" : answer.value < 0 ? "fatalist" : "neutral");
           button.setAttribute("aria-pressed", String(selectedValue === answer.value));
-          const answerIcon = answer.value >= 2 ? "forward" : answer.value === 1 ? "save" : answer.value === 0 ? "question" : answer.value === -1 ? "previous" : "rewind";
+          const answerIcon = answer.value >= 2 ? "cycle" : answer.value === 1 ? "extra-time" : answer.value === 0 ? "scales" : answer.value === -1 ? "hourglass" : "finish-line";
           button.style.setProperty("--answer-icon", 'url("assets/game-icons/' + answerIcon + '.png")');
           button.innerHTML = '<span class="answer-mark" aria-hidden="true"><span class="answer-icon"></span></span><span></span>';
           button.lastElementChild.textContent = answer.text;
@@ -1708,7 +1741,7 @@
           { style: "condition", text: debateCase.replies.condition },
           { style: "defend", text: debateCase.replies.defend[side] }
         ];
-        const rebuttalIcons = { reconsider: "rewind", condition: "gear", defend: "target" };
+        const rebuttalIcons = { reconsider: "backward-time", condition: "checked-shield", defend: "shield-opposition" };
         rebuttals.forEach(function (rebuttal) {
           const button = document.createElement("button");
           button.type = "button";
@@ -1802,6 +1835,273 @@
         return "Seu personagem parece dividido nesta dimensão ou ainda precisa de uma experiência que o faça escolher.";
       }
 
+      function getDebateReplyText(index, style) {
+        if (!style) return "";
+        const reply = debateCases[index].replies[style];
+        if (typeof reply === "string") return reply;
+        const value = answers[index];
+        const side = value > 0 ? "eternal" : value < 0 ? "fatalist" : "neutral";
+        return reply[side];
+      }
+
+      function buildAnswerTranscript(answeredIndexes) {
+        const lines = [];
+        answeredIndexes.forEach(function (index) {
+          const question = questions[index];
+          const answer = question.answers.find(function (item) { return item.value === answers[index]; });
+          lines.push((index + 1) + ". " + question.prompt);
+          lines.push("   Escolha: " + answer.text);
+          if (debateModeEnabled && debateResponses[index]) {
+            lines.push("   " + debateStyleLabels[debateResponses[index]] + ": " + getDebateReplyText(index, debateResponses[index]));
+          }
+        });
+        return lines.join("\n");
+      }
+
+      function wrapCardText(context, text, maxWidth) {
+        const words = String(text).trim().split(/\s+/);
+        const lines = [];
+        let line = "";
+        words.forEach(function (word) {
+          const candidate = line ? line + " " + word : word;
+          if (line && context.measureText(candidate).width > maxWidth) {
+            lines.push(line);
+            line = word;
+          } else {
+            line = candidate;
+          }
+        });
+        if (line) lines.push(line);
+        return lines;
+      }
+
+      function cardRoundRect(context, x, y, width, height, radius) {
+        const r = Math.min(radius, width / 2, height / 2);
+        context.beginPath();
+        context.moveTo(x + r, y);
+        context.arcTo(x + width, y, x + width, y + height, r);
+        context.arcTo(x + width, y + height, x, y + height, r);
+        context.arcTo(x, y + height, x, y, r);
+        context.arcTo(x, y, x + width, y, r);
+        context.closePath();
+      }
+
+      function drawCardLines(context, lines, x, y, lineHeight) {
+        lines.forEach(function (line, lineIndex) {
+          context.fillText(line, x, y + lineIndex * lineHeight);
+        });
+        return y + lines.length * lineHeight;
+      }
+
+      function renderShareCard(score, verdict, answeredIndexes) {
+        const canvas = document.getElementById("share-card-canvas");
+        const context = canvas.getContext("2d");
+        const width = 1080;
+        const pad = 70;
+        const textWidth = width - pad * 2;
+        const playerLabel = playerName || "Uma vontade entre dois mundos";
+        const rows = answeredIndexes.map(function (index) {
+          const question = questions[index];
+          const answer = question.answers.find(function (item) { return item.value === answers[index]; });
+          const style = debateModeEnabled ? debateResponses[index] : null;
+          const reply = style ? getDebateReplyText(index, style) : "";
+          context.font = "500 20px Inter, system-ui, sans-serif";
+          const promptLines = wrapCardText(context, question.prompt, textWidth - 42);
+          context.font = "600 22px Inter, system-ui, sans-serif";
+          const answerLines = wrapCardText(context, answer.text, textWidth - 42);
+          context.font = "500 20px Inter, system-ui, sans-serif";
+          const replyLines = reply ? wrapCardText(context, reply, textWidth - 42) : [];
+          const height = 30 + 16 + promptLines.length * 27 + 13 + 14 + answerLines.length * 28 + (reply ? 12 + 14 + replyLines.length * 26 : 0) + 23;
+          return { index: index, question: question, answer: answer, style: style, reply: reply, promptLines: promptLines, answerLines: answerLines, replyLines: replyLines, height: height };
+        });
+
+        context.font = "700 43px Georgia, serif";
+        const nameLines = wrapCardText(context, playerLabel, textWidth - 26);
+        context.font = "700 25px Inter, system-ui, sans-serif";
+        const titleLines = wrapCardText(context, verdict.title, textWidth);
+        context.font = "400 19px Inter, system-ui, sans-serif";
+        const summaryLines = wrapCardText(context, verdict.summary, textWidth);
+        const headerHeight = 332 + nameLines.length * 51 + titleLines.length * 34 + summaryLines.length * 27;
+        const rowGaps = Math.max(0, rows.length - 1) * 13;
+        const footerHeight = 126;
+        const height = Math.ceil(headerHeight + rows.reduce(function (sum, row) { return sum + row.height; }, 0) + rowGaps + footerHeight);
+        canvas.width = width;
+        canvas.height = height;
+
+        const background = context.createLinearGradient(0, 0, width, height);
+        background.addColorStop(0, "#080d15");
+        background.addColorStop(.52, "#08090f");
+        background.addColorStop(1, "#10090e");
+        context.fillStyle = background;
+        context.fillRect(0, 0, width, height);
+        const cyanGlow = context.createRadialGradient(70, 20, 0, 70, 20, 720);
+        cyanGlow.addColorStop(0, "rgba(44, 204, 232, .18)");
+        cyanGlow.addColorStop(1, "rgba(44, 204, 232, 0)");
+        context.fillStyle = cyanGlow;
+        context.fillRect(0, 0, width, height * .56);
+        const redGlow = context.createRadialGradient(width - 50, 135, 0, width - 50, 135, 700);
+        redGlow.addColorStop(0, "rgba(235, 62, 87, .14)");
+        redGlow.addColorStop(1, "rgba(235, 62, 87, 0)");
+        context.fillStyle = redGlow;
+        context.fillRect(0, 0, width, height * .55);
+        cardRoundRect(context, 24, 24, width - 48, height - 48, 28);
+        context.strokeStyle = "rgba(169, 203, 218, .28)";
+        context.lineWidth = 2;
+        context.stroke();
+
+        const eternal = verdict.tone === "eternal";
+        const fatalist = verdict.tone === "fatalist";
+        const accent = eternal ? "#71eaff" : fatalist ? "#ff7789" : "#d4e1e7";
+        let y = 68;
+        context.textAlign = "left";
+        context.textBaseline = "alphabetic";
+        context.fillStyle = "#aac3cc";
+        context.font = "700 17px Inter, system-ui, sans-serif";
+        context.fillText("ELO ETERNO   /   FATALISTAS", pad, y);
+        y += 37;
+        context.fillStyle = "#f0f8fb";
+        context.font = "700 43px Georgia, serif";
+        y = drawCardLines(context, nameLines, pad, y, 51) + 19;
+
+        context.font = "700 16px Inter, system-ui, sans-serif";
+        const pillWidth = Math.min(textWidth, context.measureText(verdict.label).width + 34);
+        cardRoundRect(context, pad, y - 23, pillWidth, 39, 19);
+        context.fillStyle = eternal ? "rgba(99, 231, 255, .14)" : fatalist ? "rgba(255, 83, 103, .14)" : "rgba(196, 213, 221, .12)";
+        context.fill();
+        context.strokeStyle = eternal ? "rgba(99, 231, 255, .48)" : fatalist ? "rgba(255, 83, 103, .46)" : "rgba(196, 213, 221, .3)";
+        context.stroke();
+        context.fillStyle = accent;
+        context.fillText(verdict.label.toUpperCase(), pad + 17, y + 3);
+        y += 45;
+
+        context.fillStyle = "#e6eff2";
+        context.font = "700 25px Inter, system-ui, sans-serif";
+        y = drawCardLines(context, titleLines, pad, y, 34) + 8;
+        context.fillStyle = "#aebdc4";
+        context.font = "400 19px Inter, system-ui, sans-serif";
+        y = drawCardLines(context, summaryLines, pad, y, 27) + 22;
+
+        context.fillStyle = "#aebdc4";
+        context.font = "700 15px Inter, system-ui, sans-serif";
+        context.fillText("INCLINAÇÃO GERAL", pad, y);
+        context.textAlign = "right";
+        context.fillStyle = accent;
+        const scoreText = score > 0 ? "+" + score + " · ELO ETERNO" : score < 0 ? score + " · FATALISTAS" : "0 · EQUILÍBRIO";
+        context.fillText(scoreText, width - pad, y);
+        context.textAlign = "left";
+        y += 17;
+        const trackGradient = context.createLinearGradient(pad, 0, width - pad, 0);
+        trackGradient.addColorStop(0, "#ff5367");
+        trackGradient.addColorStop(.5, "#58616b");
+        trackGradient.addColorStop(1, "#63e7ff");
+        cardRoundRect(context, pad, y, textWidth, 11, 6);
+        context.fillStyle = trackGradient;
+        context.fill();
+        const markerX = pad + textWidth * ((score + 100) / 200);
+        context.beginPath();
+        context.arc(markerX, y + 5.5, 10, 0, Math.PI * 2);
+        context.fillStyle = "#f5fbfd";
+        context.fill();
+        context.lineWidth = 4;
+        context.strokeStyle = score < 0 ? "#ff7184" : score > 0 ? "#63e7ff" : "#cbd7dc";
+        context.stroke();
+        y += 34;
+        context.font = "500 15px Inter, system-ui, sans-serif";
+        context.fillStyle = "#92a5ae";
+        context.fillText("FATALISTAS", pad, y);
+        context.textAlign = "center";
+        context.fillText("ENTRE OS DOIS", width / 2, y);
+        context.textAlign = "right";
+        context.fillText("ELO ETERNO", width - pad, y);
+        context.textAlign = "left";
+        y += 58;
+        context.fillStyle = "#eaf4f7";
+        context.font = "700 20px Inter, system-ui, sans-serif";
+        context.fillText("RESPOSTAS DA PARTIDA", pad, y);
+        context.textAlign = "right";
+        context.fillStyle = "#93a8b1";
+        context.font = "500 16px Inter, system-ui, sans-serif";
+        context.fillText(answeredIndexes.length + " / " + questions.length + (debateModeEnabled ? " · MODO DEBATE" : " · DILEMAS"), width - pad, y);
+        context.textAlign = "left";
+        y += 24;
+
+        rows.forEach(function (row, rowIndex) {
+          const boxX = pad - 7;
+          const boxWidth = textWidth + 14;
+          cardRoundRect(context, boxX, y, boxWidth, row.height, 16);
+          context.fillStyle = "rgba(14, 21, 30, .82)";
+          context.fill();
+          context.strokeStyle = "rgba(139, 166, 178, .19)";
+          context.lineWidth = 1;
+          context.stroke();
+          let rowY = y + 29;
+          context.fillStyle = "#93a9b2";
+          context.font = "700 15px Inter, system-ui, sans-serif";
+          context.fillText(String(row.index + 1).padStart(2, "0") + "   ·   " + axes[row.question.axis].label.toUpperCase(), pad + 12, rowY);
+          rowY += 31;
+          context.fillStyle = "#cad7dc";
+          context.font = "500 20px Inter, system-ui, sans-serif";
+          rowY = drawCardLines(context, row.promptLines, pad + 12, rowY, 27) + 10;
+          context.fillStyle = "#93a9b2";
+          context.font = "700 13px Inter, system-ui, sans-serif";
+          context.fillText("ESCOLHEU", pad + 12, rowY);
+          rowY += 21;
+          context.fillStyle = row.answer.value > 0 ? "#9cefff" : row.answer.value < 0 ? "#ff9aa7" : "#e0e8eb";
+          context.font = "600 22px Inter, system-ui, sans-serif";
+          rowY = drawCardLines(context, row.answerLines, pad + 12, rowY, 28);
+          if (row.reply) {
+            rowY += 9;
+            context.fillStyle = "#93a9b2";
+            context.font = "700 13px Inter, system-ui, sans-serif";
+            context.fillText("NO CONTRAPONTO · " + debateStyleLabels[row.style].toUpperCase(), pad + 12, rowY);
+            rowY += 21;
+            context.fillStyle = "#d7e2e6";
+            context.font = "500 20px Inter, system-ui, sans-serif";
+            drawCardLines(context, row.replyLines, pad + 12, rowY, 26);
+          }
+          y += row.height + (rowIndex < rows.length - 1 ? 13 : 0);
+        });
+
+        y = height - 64;
+        context.strokeStyle = "rgba(143, 174, 187, .22)";
+        context.beginPath();
+        context.moveTo(pad, y - 22);
+        context.lineTo(width - pad, y - 22);
+        context.stroke();
+        context.fillStyle = "#91a5ae";
+        context.font = "500 14px Inter, system-ui, sans-serif";
+        context.fillText("O QUE VOCÊ ESCOLHERIA PRESERVAR?   ·   TESTE DE PERSONAGEM", pad, y);
+        context.textAlign = "right";
+        context.fillStyle = "#c2d2d8";
+        context.fillText("RECOMEÇO  ◇  MEMÓRIA", width - pad, y);
+        context.textAlign = "left";
+      }
+
+      function makeCardFilename() {
+        const base = (playerName || "meu-resultado").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        return "elo-eterno-fatalistas-" + (base || "meu-resultado") + ".png";
+      }
+
+      function createCardBlob() {
+        return new Promise(function (resolve, reject) {
+          document.getElementById("share-card-canvas").toBlob(function (blob) {
+            if (blob) resolve(blob);
+            else reject(new Error("Não foi possível montar a imagem."));
+          }, "image/png");
+        });
+      }
+
+      function downloadCardBlob(blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = makeCardFilename();
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      }
+
       function finishTest() {
         const resultName = document.getElementById("result-name");
         if (playerName) {
@@ -1831,6 +2131,7 @@
           document.getElementById("tension-text").textContent = "Volte ao teste e escolha as respostas que mais combinam com o personagem.";
           document.getElementById("answered-note").textContent = "Nenhuma resposta foi registrada.";
           document.getElementById("debate-summary").hidden = true;
+          document.getElementById("share-card-section").hidden = true;
           resultSummaryText = (playerName ? "Personagem: " + playerName + "\n" : "") + "Ainda não há material para um veredito.";
           showScreen("result");
           return;
@@ -1952,7 +2253,9 @@
           debateSummary.hidden = true;
           document.getElementById("debate-stats").replaceChildren();
         }
-        resultSummaryText = (playerName ? "Personagem: " + playerName + "\n" : "") + verdict.label + "\n" + verdict.title + "\n" + verdict.summary + "\nInclinação geral: " + (score > 0 ? "Elo Eterno +" + score : score < 0 ? "Fatalistas " + score : "equilíbrio") + ".\n" + tensionText + debateSummaryText;
+        resultSummaryText = (playerName ? "Personagem: " + playerName + "\n" : "") + verdict.label + "\n" + verdict.title + "\n" + verdict.summary + "\nInclinação geral: " + (score > 0 ? "Elo Eterno +" + score : score < 0 ? "Fatalistas " + score : "equilíbrio") + ".\n" + tensionText + debateSummaryText + "\n\nRESPOSTAS DA PARTIDA\n" + buildAnswerTranscript(answeredIndexes);
+        renderShareCard(score, verdict, answeredIndexes);
+        document.getElementById("share-card-section").hidden = false;
         showScreen("result");
       }
 
@@ -2017,16 +2320,16 @@
         answers.fill(null);
         debateResponses.fill(null);
         currentIndex = 0;
-        document.getElementById("copy-status").textContent = "";
+        document.getElementById("result-status").textContent = "";
         showScreen("start");
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
 
       document.getElementById("copy-button").addEventListener("click", async function () {
-        const status = document.getElementById("copy-status");
+        const status = document.getElementById("result-status");
         try {
           await navigator.clipboard.writeText(resultSummaryText);
-          status.textContent = "Veredito copiado.";
+          status.textContent = "Veredito e respostas copiados.";
         } catch (error) {
           const temporary = document.createElement("textarea");
           temporary.value = resultSummaryText;
@@ -2037,7 +2340,56 @@
           temporary.select();
           const copied = document.execCommand("copy");
           temporary.remove();
-          status.textContent = copied ? "Veredito copiado." : "Não foi possível copiar automaticamente. Selecione o texto do resultado.";
+          status.textContent = copied ? "Veredito e respostas copiados." : "Não foi possível copiar automaticamente. Selecione o texto do resultado.";
+        }
+      });
+
+      document.getElementById("download-card-button").addEventListener("click", async function () {
+        const status = document.getElementById("result-status");
+        try {
+          const blob = await createCardBlob();
+          downloadCardBlob(blob);
+          status.textContent = "Card PNG baixado.";
+        } catch (error) {
+          status.textContent = "Não foi possível gerar o card. Tente novamente.";
+        }
+      });
+
+      document.getElementById("share-card-button").addEventListener("click", async function () {
+        const status = document.getElementById("result-status");
+        try {
+          const blob = await createCardBlob();
+          if (typeof File !== "function") {
+            downloadCardBlob(blob);
+            status.textContent = "Card PNG baixado para você compartilhar.";
+            return;
+          }
+          const file = new File([blob], makeCardFilename(), { type: "image/png" });
+          const canShareImage = typeof navigator.share === "function" && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] });
+          if (canShareImage) {
+            const chosenCount = answers.filter(function (value) { return value !== null; }).length;
+            await navigator.share({
+              files: [file],
+              title: "Meu resultado · Elo Eterno e Fatalistas",
+              text: (playerName ? playerName + " — " : "") + document.getElementById("verdict").textContent + " · " + chosenCount + " respostas"
+            });
+            status.textContent = "Card compartilhado.";
+          } else {
+            downloadCardBlob(blob);
+            status.textContent = "Este navegador não oferece compartilhamento de imagem; baixei o card para você compartilhar.";
+          }
+        } catch (error) {
+          if (error && error.name === "AbortError") {
+            status.textContent = "Compartilhamento cancelado.";
+            return;
+          }
+          try {
+            const blob = await createCardBlob();
+            downloadCardBlob(blob);
+            status.textContent = "Não foi possível abrir o compartilhamento; baixei o card PNG para você enviar manualmente.";
+          } catch (downloadError) {
+            status.textContent = "Não foi possível compartilhar ou gerar o card agora. Tente novamente.";
+          }
         }
       });
     }());
