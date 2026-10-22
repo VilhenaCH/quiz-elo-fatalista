@@ -897,14 +897,21 @@
 
     .share-card-section h3 { margin-bottom: 5px; }
     .share-card-section > p { margin-bottom: 17px; color: var(--muted); font-size: .9rem; }
+    .card-mode-toggle { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; width: min(100%, 480px); margin: 0 auto 15px; padding: 4px; border: 1px solid rgba(130, 162, 177, .23); border-radius: 12px; background: rgba(4, 7, 12, .78); }
+    .card-mode-option { min-height: 39px; padding: 7px 12px; border: 0; border-radius: 8px; color: #9daeb5; background: transparent; font: inherit; font-size: .82rem; font-weight: 650; cursor: pointer; transition: background .2s ease, color .2s ease, box-shadow .2s ease; }
+    .card-mode-option[aria-pressed="true"] { color: #e7f8fb; background: linear-gradient(110deg, rgba(27, 120, 139, .52), rgba(94, 35, 49, .48)); box-shadow: inset 0 0 0 1px rgba(139, 211, 226, .28); }
+    .card-mode-option:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
     .share-card-frame {
       width: min(100%, 480px);
+      max-height: min(72vh, 760px);
       margin: 0 auto;
-      overflow: hidden;
+      overflow: auto;
+      overscroll-behavior: contain;
       border: 1px solid rgba(139, 174, 191, .28);
       border-radius: 15px;
       background: #070a10;
       box-shadow: 0 20px 60px rgba(0, 0, 0, .38), 0 0 35px rgba(93, 212, 237, .08);
+      scrollbar-color: #455c68 #080b11;
     }
 
     .share-card-preview { display: block; width: 100%; height: auto; }
@@ -1186,7 +1193,11 @@
       </details>
       <section class="share-card-section" id="share-card-section" hidden aria-labelledby="share-card-title">
         <h3 id="share-card-title">Seu card de resultado</h3>
-        <p>Um resumo visual do veredito, da inclinação e das principais reflexões. A foto do personagem também aparece no card.</p>
+        <p>Escolha o resumo das principais reflexões ou o card completo com as perguntas e respostas da partida.</p>
+        <div class="card-mode-toggle" role="group" aria-label="Escolha o formato do card">
+          <button class="card-mode-option" id="summary-card-option" type="button" aria-pressed="true">Resumo</button>
+          <button class="card-mode-option" id="complete-card-option" type="button" aria-pressed="false">Completo</button>
+        </div>
         <div class="share-card-frame"><canvas id="share-card-canvas" class="share-card-preview" aria-label="Card compartilhável com seu veredito e as respostas"></canvas></div>
         <div class="result-actions share-card-actions">
           <button class="button" id="share-card-button" type="button">Compartilhar card</button>
@@ -1714,6 +1725,8 @@
       let currentIndex = 0;
       let resultSummaryText = "";
       let playerName = "";
+      let cardMode = "summary";
+      let currentCardData = null;
       let playerPhoto = null;
       let playerPhotoUrl = "";
       let pendingPhotoUrl = "";
@@ -2205,9 +2218,219 @@
         context.textAlign = "left";
       }
 
+      function renderCompleteShareCard(score, verdict, answeredIndexes) {
+        const canvas = document.getElementById("share-card-canvas");
+        const context = canvas.getContext("2d");
+        const width = 1080;
+        const pad = 68;
+        const contentWidth = width - pad * 2;
+        const portraitSize = 164;
+        const portraitY = 104;
+        const textX = pad + portraitSize + 32;
+        const textWidth = width - pad - textX;
+        const rows = answeredIndexes.map(function (index) {
+          const question = questions[index];
+          const answer = question.answers.find(function (item) { return item.value === answers[index]; });
+          const style = debateModeEnabled ? debateResponses[index] : null;
+          const reply = style ? getDebateReplyText(index, style) : "";
+          context.font = "500 19px Inter, system-ui, sans-serif";
+          const promptLines = wrapCardText(context, question.prompt, contentWidth - 44);
+          context.font = "600 21px Inter, system-ui, sans-serif";
+          const answerLines = wrapCardText(context, answer.text, contentWidth - 44);
+          context.font = "500 19px Inter, system-ui, sans-serif";
+          const replyLines = reply ? wrapCardText(context, reply, contentWidth - 44) : [];
+          const height = 128 + promptLines.length * 26 + answerLines.length * 27 + (reply ? 37 + replyLines.length * 25 : 0);
+          return { index: index, question: question, answer: answer, style: style, reply: reply, promptLines: promptLines, answerLines: answerLines, replyLines: replyLines, height: height };
+        });
+
+        const playerLabel = playerName || "Uma vontade entre dois mundos";
+        context.font = "700 41px Georgia, serif";
+        const nameLines = wrapCardText(context, playerLabel, textWidth);
+        context.font = "700 23px Inter, system-ui, sans-serif";
+        const titleLines = wrapCardText(context, verdict.title, textWidth);
+        context.font = "400 18px Inter, system-ui, sans-serif";
+        const summaryLines = wrapCardText(context, verdict.summary, textWidth);
+        const nameBottom = 145 + nameLines.length * 47;
+        const pillY = nameBottom + 17;
+        const titleY = pillY + 55;
+        const summaryY = titleY + titleLines.length * 29 + 10;
+        const profileBottom = Math.max(portraitY + portraitSize, summaryY + summaryLines.length * 24);
+        const scoreY = profileBottom + 45;
+        const answersTitleY = scoreY + 101;
+        const rowsStartY = answersTitleY + 31;
+        const rowGaps = Math.max(0, rows.length - 1) * 12;
+        const footerHeight = 92;
+        const height = Math.ceil(rowsStartY + rows.reduce(function (sum, row) { return sum + row.height; }, 0) + rowGaps + footerHeight);
+        canvas.width = width;
+        canvas.height = height;
+
+        const background = context.createLinearGradient(0, 0, width, height);
+        background.addColorStop(0, "#080d15");
+        background.addColorStop(.5, "#080a10");
+        background.addColorStop(1, "#10090e");
+        context.fillStyle = background;
+        context.fillRect(0, 0, width, height);
+        const cyanGlow = context.createRadialGradient(65, 35, 0, 65, 35, 700);
+        cyanGlow.addColorStop(0, "rgba(44, 204, 232, .18)");
+        cyanGlow.addColorStop(1, "rgba(44, 204, 232, 0)");
+        context.fillStyle = cyanGlow;
+        context.fillRect(0, 0, width, height * .48);
+        const redGlow = context.createRadialGradient(width - 60, 170, 0, width - 60, 170, 650);
+        redGlow.addColorStop(0, "rgba(235, 62, 87, .16)");
+        redGlow.addColorStop(1, "rgba(235, 62, 87, 0)");
+        context.fillStyle = redGlow;
+        context.fillRect(0, 0, width, height * .48);
+        cardRoundRect(context, 24, 24, width - 48, height - 48, 28);
+        context.strokeStyle = "rgba(169, 203, 218, .3)";
+        context.lineWidth = 2;
+        context.stroke();
+
+        const eternal = verdict.tone === "eternal";
+        const fatalist = verdict.tone === "fatalist";
+        const accent = eternal ? "#71eaff" : fatalist ? "#ff7789" : "#d4e1e7";
+        context.textAlign = "left";
+        context.textBaseline = "alphabetic";
+        context.fillStyle = "#aac3cc";
+        context.font = "700 17px Inter, system-ui, sans-serif";
+        context.fillText("ELO ETERNO   /   FATALISTAS · CARD COMPLETO", pad, 68);
+        drawCardPortrait(context, pad, portraitY, portraitSize);
+
+        context.fillStyle = "#f0f8fb";
+        context.font = "700 41px Georgia, serif";
+        drawCardLines(context, nameLines, textX, 145, 47);
+        context.font = "700 15px Inter, system-ui, sans-serif";
+        const pillWidth = Math.min(textWidth, context.measureText(verdict.label).width + 32);
+        cardRoundRect(context, textX, pillY - 22, pillWidth, 35, 17);
+        context.fillStyle = eternal ? "rgba(99, 231, 255, .14)" : fatalist ? "rgba(255, 83, 103, .15)" : "rgba(196, 213, 221, .13)";
+        context.fill();
+        context.strokeStyle = eternal ? "rgba(99, 231, 255, .48)" : fatalist ? "rgba(255, 83, 103, .5)" : "rgba(196, 213, 221, .3)";
+        context.stroke();
+        context.fillStyle = accent;
+        context.fillText(verdict.label.toUpperCase(), textX + 16, pillY);
+        context.fillStyle = "#e6eff2";
+        context.font = "700 23px Inter, system-ui, sans-serif";
+        drawCardLines(context, titleLines, textX, titleY, 29);
+        context.fillStyle = "#aebdc4";
+        context.font = "400 18px Inter, system-ui, sans-serif";
+        drawCardLines(context, summaryLines, textX, summaryY, 24);
+
+        context.fillStyle = "#aebdc4";
+        context.font = "700 15px Inter, system-ui, sans-serif";
+        context.fillText("INCLINAÇÃO GERAL", pad, scoreY);
+        context.textAlign = "right";
+        context.fillStyle = accent;
+        const scoreText = score > 0 ? "+" + score + " · ELO ETERNO" : score < 0 ? score + " · FATALISTAS" : "0 · EQUILÍBRIO";
+        context.fillText(scoreText, width - pad, scoreY);
+        context.textAlign = "left";
+        const trackY = scoreY + 18;
+        const trackGradient = context.createLinearGradient(pad, 0, width - pad, 0);
+        trackGradient.addColorStop(0, "#ff5367");
+        trackGradient.addColorStop(.5, "#58616b");
+        trackGradient.addColorStop(1, "#63e7ff");
+        cardRoundRect(context, pad, trackY, contentWidth, 11, 6);
+        context.fillStyle = trackGradient;
+        context.fill();
+        const markerX = pad + contentWidth * ((score + 100) / 200);
+        context.beginPath();
+        context.arc(markerX, trackY + 5.5, 10, 0, Math.PI * 2);
+        context.fillStyle = "#f5fbfd";
+        context.fill();
+        context.lineWidth = 4;
+        context.strokeStyle = score < 0 ? "#ff7184" : score > 0 ? "#63e7ff" : "#cbd7dc";
+        context.stroke();
+        context.fillStyle = "#92a5ae";
+        context.font = "500 15px Inter, system-ui, sans-serif";
+        context.fillText("FATALISTAS", pad, trackY + 39);
+        context.textAlign = "center";
+        context.fillText("ENTRE OS DOIS", width / 2, trackY + 39);
+        context.textAlign = "right";
+        context.fillText("ELO ETERNO", width - pad, trackY + 39);
+        context.textAlign = "left";
+        context.fillStyle = "#eaf4f7";
+        context.font = "700 20px Inter, system-ui, sans-serif";
+        context.fillText("SUAS RESPOSTAS", pad, answersTitleY);
+        context.textAlign = "right";
+        context.fillStyle = "#93a8b1";
+        context.font = "500 16px Inter, system-ui, sans-serif";
+        context.fillText(answeredIndexes.length + " / " + questions.length + (debateModeEnabled ? " · MODO DEBATE" : " · DILEMAS"), width - pad, answersTitleY);
+        context.textAlign = "left";
+
+        let y = rowsStartY;
+        rows.forEach(function (row, rowIndex) {
+          cardRoundRect(context, pad, y, contentWidth, row.height, 16);
+          context.fillStyle = "rgba(14, 21, 30, .88)";
+          context.fill();
+          context.strokeStyle = "rgba(139, 166, 178, .2)";
+          context.lineWidth = 1;
+          context.stroke();
+          cardRoundRect(context, pad, y, 5, row.height, 3);
+          context.fillStyle = row.answer.value > 0 ? "#63e7ff" : row.answer.value < 0 ? "#ff5367" : "#a8bac2";
+          context.fill();
+          let rowY = y + 29;
+          context.fillStyle = "#93a9b2";
+          context.font = "700 15px Inter, system-ui, sans-serif";
+          context.fillText(String(row.index + 1).padStart(2, "0") + "   ·   " + axes[row.question.axis].label.toUpperCase(), pad + 18, rowY);
+          rowY += 28;
+          context.fillStyle = "#95aab3";
+          context.font = "700 13px Inter, system-ui, sans-serif";
+          context.fillText("PERGUNTA", pad + 18, rowY);
+          rowY += 20;
+          context.fillStyle = "#cad7dc";
+          context.font = "500 19px Inter, system-ui, sans-serif";
+          rowY = drawCardLines(context, row.promptLines, pad + 18, rowY, 26) + 10;
+          context.fillStyle = "#95aab3";
+          context.font = "700 13px Inter, system-ui, sans-serif";
+          context.fillText("ESCOLHA", pad + 18, rowY);
+          rowY += 20;
+          context.fillStyle = row.answer.value > 0 ? "#9cefff" : row.answer.value < 0 ? "#ff9aa7" : "#e0e8eb";
+          context.font = "600 21px Inter, system-ui, sans-serif";
+          rowY = drawCardLines(context, row.answerLines, pad + 18, rowY, 27);
+          if (row.reply) {
+            rowY += 10;
+            context.fillStyle = "#95aab3";
+            context.font = "700 13px Inter, system-ui, sans-serif";
+            context.fillText("RÉPLICA · " + debateStyleLabels[row.style].toUpperCase(), pad + 18, rowY);
+            rowY += 20;
+            context.fillStyle = "#d7e2e6";
+            context.font = "500 19px Inter, system-ui, sans-serif";
+            drawCardLines(context, row.replyLines, pad + 18, rowY, 25);
+          }
+          y += row.height + (rowIndex < rows.length - 1 ? 12 : 0);
+        });
+
+        y = height - 55;
+        context.strokeStyle = "rgba(143, 174, 187, .22)";
+        context.beginPath();
+        context.moveTo(pad, y - 22);
+        context.lineTo(width - pad, y - 22);
+        context.stroke();
+        context.fillStyle = "#91a5ae";
+        context.font = "500 14px Inter, system-ui, sans-serif";
+        context.fillText("TESTE DE PERSONAGEM   ·   " + answeredIndexes.length + " RESPOSTAS", pad, y);
+        context.textAlign = "right";
+        context.fillStyle = "#c2d2d8";
+        context.fillText("RECOMEÇO  ◇  MEMÓRIA", width - pad, y);
+        context.textAlign = "left";
+      }
+
+      function renderCurrentCard() {
+        if (!currentCardData) return;
+        const summaryOption = document.getElementById("summary-card-option");
+        const completeOption = document.getElementById("complete-card-option");
+        summaryOption.setAttribute("aria-pressed", String(cardMode === "summary"));
+        completeOption.setAttribute("aria-pressed", String(cardMode === "complete"));
+        if (cardMode === "complete") {
+          document.getElementById("share-card-canvas").setAttribute("aria-label", "Card completo com todas as perguntas, respostas, réplica e veredito");
+          renderCompleteShareCard(currentCardData.score, currentCardData.verdict, currentCardData.answeredIndexes);
+        } else {
+          document.getElementById("share-card-canvas").setAttribute("aria-label", "Card-resumo com veredito e reflexões principais sobre o personagem");
+          renderShareCard(currentCardData.score, currentCardData.verdict, currentCardData.reflections);
+        }
+      }
+
       function makeCardFilename() {
         const base = (playerName || "meu-resultado").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-        return "elo-eterno-fatalistas-" + (base || "meu-resultado") + ".png";
+        return "elo-eterno-fatalistas-" + (base || "meu-resultado") + (cardMode === "complete" ? "-completo" : "-resumo") + ".png";
       }
 
       function createCardBlob() {
@@ -2275,6 +2498,7 @@
           document.getElementById("answered-note").textContent = "Nenhuma resposta foi registrada.";
           document.getElementById("debate-summary").hidden = true;
           document.getElementById("share-card-section").hidden = true;
+          currentCardData = null;
           resultSummaryText = (playerName ? "Personagem: " + playerName + "\n" : "") + "Ainda não há material para um veredito.";
           showScreen("result");
           return;
@@ -2397,7 +2621,14 @@
           document.getElementById("debate-stats").replaceChildren();
         }
         resultSummaryText = (playerName ? "Personagem: " + playerName + "\n" : "") + verdict.label + "\n" + verdict.title + "\n" + verdict.summary + "\nInclinação geral: " + (score > 0 ? "Elo Eterno +" + score : score < 0 ? "Fatalistas " + score : "equilíbrio") + ".\n" + tensionText + debateSummaryText + "\n\nRESPOSTAS DA PARTIDA\n" + buildAnswerTranscript(answeredIndexes);
-        renderShareCard(score, verdict, buildCardReflections(axisScores, score, debateEntries));
+        cardMode = "summary";
+        currentCardData = {
+          score: score,
+          verdict: verdict,
+          reflections: buildCardReflections(axisScores, score, debateEntries),
+          answeredIndexes: answeredIndexes.slice()
+        };
+        renderCurrentCard();
         document.getElementById("share-card-section").hidden = false;
         showScreen("result");
       }
@@ -2553,6 +2784,16 @@
         }
       });
 
+      document.getElementById("summary-card-option").addEventListener("click", function () {
+        cardMode = "summary";
+        renderCurrentCard();
+      });
+
+      document.getElementById("complete-card-option").addEventListener("click", function () {
+        cardMode = "complete";
+        renderCurrentCard();
+      });
+
       document.getElementById("download-card-button").addEventListener("click", async function () {
         const status = document.getElementById("result-status");
         try {
@@ -2579,7 +2820,7 @@
             const chosenCount = answers.filter(function (value) { return value !== null; }).length;
             await navigator.share({
               files: [file],
-              title: "Meu resultado · Elo Eterno e Fatalistas",
+              title: cardMode === "complete" ? "Meu card completo · Elo Eterno e Fatalistas" : "Meu card-resumo · Elo Eterno e Fatalistas",
               text: (playerName ? playerName + " — " : "") + document.getElementById("verdict").textContent + " · " + chosenCount + " respostas"
             });
             status.textContent = "Card compartilhado.";
