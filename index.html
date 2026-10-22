@@ -1,0 +1,1777 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#05070b">
+  <meta name="description" content="Um teste narrativo para explorar se seu personagem se aproxima mais do Elo Eterno ou dos Fatalistas.">
+  <title>Entre o Recomeço e o Fim — Teste de personagem</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #05070b;
+      --surface: #0c1017;
+      --surface-raised: #111722;
+      --line: #202a35;
+      --text: #eef7fb;
+      --muted: #8b9ba5;
+      --cyan: #63e7ff;
+      --cyan-bright: #a5f3ff;
+      --red: #ff5367;
+      --red-bright: #ff9aa5;
+      --focus: #b9f7ff;
+      --radius: 18px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      position: relative;
+      isolation: isolate;
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--text);
+      overflow-x: hidden;
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    body::before, body::after {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      pointer-events: none;
+      content: "";
+    }
+
+    body::before {
+      background: radial-gradient(ellipse at center 35%, transparent 0, rgba(5, 7, 11, .08) 58%, rgba(5, 7, 11, .34) 100%);
+    }
+
+    body::after {
+      opacity: .14;
+      background-image: radial-gradient(rgba(223, 244, 252, .34) .6px, transparent .6px);
+      background-size: 5px 5px;
+      mask-image: linear-gradient(to bottom, #000, transparent 92%);
+    }
+
+    @keyframes orbit-spin { to { transform: rotate(360deg); } }
+    @keyframes ring-breathe { 0%, 100% { opacity: .56; transform: scale(.96); } 50% { opacity: .95; transform: scale(1.04); } }
+    @keyframes reveal-up { from { opacity: 0; transform: translateY(13px); filter: blur(5px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+    @keyframes soft-glow { 0%, 100% { box-shadow: 0 0 24px rgba(99, 231, 255, .18); } 50% { box-shadow: 0 0 42px rgba(99, 231, 255, .34); } }
+    @keyframes light-cyan-drift { 0% { opacity: .55; transform: translate3d(-2%, -2%, 0) scale(.88); } 50% { opacity: .94; transform: translate3d(7%, 5%, 0) scale(1.08); } 100% { opacity: .7; transform: translate3d(1%, 11%, 0) scale(.96); } }
+    @keyframes light-red-drift { 0% { opacity: .62; transform: translate3d(2%, 2%, 0) scale(.92); } 50% { opacity: .96; transform: translate3d(-8%, -5%, 0) scale(1.1); } 100% { opacity: .68; transform: translate3d(-1%, 9%, 0) scale(.9); } }
+
+    button { font: inherit; }
+
+    .shell {
+      width: min(100% - 36px, 860px);
+      margin: 0 auto;
+      padding: 30px 0 76px;
+    }
+
+    .ambient-light {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .ambient-light span {
+      position: absolute;
+      top: 4vh;
+      width: clamp(440px, 62vw, 850px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      filter: blur(24px);
+      mix-blend-mode: screen;
+      will-change: transform, opacity;
+    }
+
+    .ambient-cyan {
+      left: -25vw;
+      background: radial-gradient(circle, rgba(30, 204, 236, .3) 0, rgba(17, 117, 145, .19) 28%, rgba(10, 40, 54, .08) 48%, transparent 72%);
+      animation: light-cyan-drift 14s ease-in-out infinite alternate;
+    }
+
+    .ambient-light .ambient-red {
+      top: 19vh;
+      right: -24vw;
+      background: radial-gradient(circle, rgba(248, 50, 83, .28) 0, rgba(142, 25, 51, .17) 30%, rgba(54, 12, 28, .08) 49%, transparent 73%);
+      animation: light-red-drift 16s ease-in-out -5s infinite alternate;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--cyan);
+      font-size: .76rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 780px;
+      margin-bottom: 16px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.25rem, 6vw, 4.3rem);
+      font-weight: 500;
+      letter-spacing: -.045em;
+      line-height: 1.06;
+    }
+
+    .hero {
+      position: relative;
+      max-width: 750px;
+      padding: 22px 0 0;
+      animation: reveal-up .9s cubic-bezier(.2,.75,.25,1) both;
+    }
+
+    .hero .eyebrow { color: #a2dce8; }
+
+    .hero h1 {
+      margin-bottom: 14px;
+      font-size: clamp(2.65rem, 7.2vw, 5.3rem);
+      line-height: .99;
+    }
+
+    .hero h1 em {
+      color: var(--cyan);
+      font-style: normal;
+      text-shadow: 0 0 35px rgba(99, 231, 255, .22);
+    }
+
+    .hero-copy {
+      max-width: 600px;
+      margin: 0;
+      color: #aebdc5;
+      font-size: clamp(.98rem, 2vw, 1.1rem);
+    }
+
+    .fracture-mark {
+      position: relative;
+      display: grid;
+      width: 84px;
+      height: 84px;
+      place-items: center;
+      margin: 0 0 28px 1px;
+      border-radius: 50%;
+      animation: ring-breathe 5s ease-in-out infinite;
+    }
+
+    .fracture-mark::before {
+      position: absolute;
+      inset: 4px;
+      border-radius: inherit;
+      border: 1px solid rgba(145, 175, 188, .24);
+      content: "";
+      box-shadow: 0 0 22px rgba(99, 231, 255, .055), inset 0 0 22px rgba(255, 83, 103, .04);
+    }
+
+    .fracture-mark::after {
+      position: absolute;
+      inset: 11px;
+      z-index: 0;
+      border: 1px solid rgba(147, 173, 187, .25);
+      border-radius: inherit;
+      content: "";
+      box-shadow: inset 0 0 20px rgba(99, 231, 255, .04), 0 0 22px rgba(255, 83, 103, .05);
+    }
+
+    .fracture-orbit {
+      position: absolute;
+      z-index: 1;
+      inset: 5px;
+      border: 1px solid rgba(99, 231, 255, .2);
+      border-radius: 50%;
+      animation: orbit-spin 9s linear infinite;
+    }
+
+    .fracture-orbit::before {
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--cyan-bright);
+      box-shadow: 0 0 10px 3px rgba(99, 231, 255, .72), 0 0 27px rgba(99, 231, 255, .47);
+      content: "";
+      transform: translateX(-50%);
+    }
+
+    .fracture-orbit.orbit-red {
+      inset: 15px;
+      border-color: rgba(255, 83, 103, .23);
+      animation-duration: 7s;
+      animation-direction: reverse;
+    }
+
+    .fracture-orbit.orbit-red::before {
+      top: auto;
+      bottom: -4px;
+      width: 9px;
+      height: 9px;
+      background: var(--red-bright);
+      box-shadow: 0 0 10px 3px rgba(255, 83, 103, .7), 0 0 26px rgba(255, 83, 103, .44);
+    }
+
+    .fracture-core {
+      z-index: 3;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #e8fbff;
+      box-shadow: 0 0 10px 3px rgba(99, 231, 255, .7), 0 0 26px 8px rgba(255, 83, 103, .38);
+    }
+
+    .hero .fracture-mark { margin-bottom: 30px; }
+
+    .start-panel h2 { max-width: 510px; }
+
+    .start-panel > p:not(.eyebrow):not(.privacy-note) {
+      max-width: 460px;
+      margin-bottom: 0;
+      font-size: .95rem;
+    }
+
+    .start-options { display: grid; gap: 15px; margin: 22px 0 25px; }
+
+    .field-label {
+      display: block;
+      margin-bottom: 7px;
+      color: #dce9ed;
+      font-size: .84rem;
+      font-weight: 650;
+    }
+
+    .name-input {
+      width: 100%;
+      min-height: 47px;
+      padding: 11px 13px;
+      border: 1px solid #293540;
+      border-radius: 11px;
+      outline: none;
+      color: var(--text);
+      background: rgba(5, 8, 13, .76);
+      font: inherit;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .name-input::placeholder { color: #677780; }
+    .name-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(99, 231, 255, .1); }
+
+    .mode-toggle {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 15px;
+      border: 1px solid rgba(99, 231, 255, .2);
+      border-radius: 12px;
+      background: linear-gradient(110deg, rgba(31, 111, 127, .12), rgba(9, 13, 19, .72));
+      cursor: pointer;
+      transition: border-color .2s ease, background .2s ease;
+    }
+
+    .mode-toggle:hover { border-color: rgba(99, 231, 255, .52); background-color: rgba(23, 66, 77, .2); }
+    .mode-toggle:focus-within { outline: 2px solid var(--focus); outline-offset: 3px; }
+    .mode-toggle input { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--cyan); }
+    .mode-toggle-copy { display: grid; gap: 2px; }
+    .mode-toggle-copy strong { color: #e8f7fa; font-size: .9rem; }
+    .mode-toggle-copy span { color: #9eafb7; font-size: .8rem; line-height: 1.45; }
+
+    .start-panel .eyebrow { color: #9ab3bd; }
+
+    .start-panel .meta-row { margin: 20px 0 24px; }
+
+    .button:not(.secondary):not(.quiet) {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .button:not(.secondary):not(.quiet)::after {
+      position: absolute;
+      top: -100%;
+      left: -45%;
+      width: 35%;
+      height: 300%;
+      background: rgba(255, 255, 255, .34);
+      content: "";
+      transform: rotate(24deg);
+      transition: left .55s ease;
+    }
+
+    .button:not(.secondary):not(.quiet):hover::after { left: 125%; }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(13, 18, 27, .97), rgba(7, 10, 15, .98));
+      box-shadow: 0 30px 90px rgba(0, 0, 0, .42), 0 0 60px rgba(46, 138, 164, .06);
+      animation: reveal-up .55s cubic-bezier(.2,.75,.25,1) both;
+    }
+
+    .start-panel {
+      max-width: 550px;
+      margin: 32px 0 0;
+      padding: 25px 0 0;
+      border: 0;
+      border-top: 1px solid rgba(130, 155, 168, .22);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      animation-delay: .14s;
+    }
+
+    .start-panel h2, .result-panel h2 {
+      margin-bottom: 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.45rem, 3.3vw, 2rem);
+      font-weight: 500;
+      letter-spacing: -.025em;
+      line-height: 1.15;
+    }
+
+    .start-panel > p {
+      max-width: 660px;
+      color: #aebdc5;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px 18px;
+      margin: 22px 0 27px;
+      color: var(--muted);
+      font-size: .84rem;
+    }
+
+    .meta-row span::before {
+      content: "•";
+      margin-right: 8px;
+      color: var(--cyan);
+    }
+
+    .privacy-note {
+      margin: 15px 0 0;
+      color: #898994;
+      font-size: .78rem;
+    }
+
+    .button {
+      min-height: 46px;
+      padding: 10px 18px;
+      border: 1px solid rgba(99, 231, 255, .65);
+      border-radius: 11px;
+      color: #041016;
+      background: linear-gradient(110deg, var(--cyan-bright), var(--cyan));
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 0 27px rgba(99, 231, 255, .19);
+      transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
+    }
+
+    .button:hover { filter: brightness(1.08); transform: translateY(-2px); box-shadow: 0 0 34px rgba(99, 231, 255, .32); }
+    .button:active { transform: translateY(0); }
+
+    .button.secondary {
+      border-color: #293540;
+      color: var(--text);
+      background: #111821;
+      font-weight: 600;
+    }
+
+    .button.quiet {
+      border-color: transparent;
+      color: #9caab4;
+      background: transparent;
+      font-weight: 500;
+    }
+
+    .button:focus-visible, .answer:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .quiz-panel {
+      padding: clamp(22px, 4.6vw, 38px);
+      border-color: rgba(114, 185, 204, .25);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, .46), 0 0 70px rgba(46, 138, 164, .075);
+    }
+
+    .question-arrive .question-title { animation: reveal-up .43s .04s both; }
+    .question-arrive .answer { animation: reveal-up .38s both; }
+    .question-arrive .choice-echo { animation: reveal-up .35s both; }
+    .question-arrive .counterpoint-card { animation: reveal-up .48s .06s both; }
+    .question-arrive .debate-prompt { animation: reveal-up .38s .1s both; }
+    .question-arrive .answer:nth-child(2) { animation-delay: .035s; }
+    .question-arrive .answer:nth-child(3) { animation-delay: .07s; }
+    .question-arrive .answer:nth-child(4) { animation-delay: .105s; }
+    .question-arrive .answer:nth-child(5) { animation-delay: .14s; }
+
+    [hidden] { display: none !important; }
+
+    .quiz-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 13px;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .step-count { color: var(--text); font-variant-numeric: tabular-nums; }
+
+    .progress-track {
+      height: 5px;
+      overflow: hidden;
+      margin-bottom: 29px;
+      border-radius: 99px;
+      background: #202731;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--red), #9b7d96 50%, var(--cyan));
+      transition: width .45s cubic-bezier(.22,.75,.24,1);
+      box-shadow: 0 0 16px rgba(99, 231, 255, .24);
+    }
+
+    .quiz-top span:first-child { color: #a6cbd6; }
+
+    .question-title {
+      max-width: 760px;
+      margin: 0 0 23px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.45rem, 3.7vw, 2.05rem);
+      font-weight: 500;
+      letter-spacing: -.025em;
+      line-height: 1.23;
+    }
+
+    .answer-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .answer {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      align-items: start;
+      gap: 12px;
+      width: 100%;
+      min-height: 56px;
+      padding: 14px 15px;
+      border: 1px solid #293540;
+      border-radius: 12px;
+      color: #dbe8ed;
+      background: rgba(8, 12, 18, .74);
+      text-align: left;
+      cursor: pointer;
+      transition: border-color .2s ease, background .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+
+    .answer:hover {
+      border-color: #5a6974;
+      background: #111a23;
+      transform: translateY(-2px);
+    }
+
+    .answer[aria-pressed="true"][data-pole="eternal"] {
+      border-color: rgba(99, 231, 255, .72);
+      background: linear-gradient(100deg, rgba(44, 184, 212, .18), rgba(44, 184, 212, .04));
+      box-shadow: inset 3px 0 0 var(--cyan), 0 0 25px rgba(59, 208, 235, .08);
+    }
+
+    .answer[aria-pressed="true"][data-pole="fatalist"] {
+      border-color: rgba(255, 83, 103, .72);
+      background: linear-gradient(100deg, rgba(230, 54, 79, .17), rgba(230, 54, 79, .04));
+      box-shadow: inset 3px 0 0 var(--red), 0 0 25px rgba(255, 62, 88, .08);
+    }
+
+    .answer[aria-pressed="true"][data-pole="neutral"] {
+      border-color: #9ba8af;
+      background: rgba(153, 169, 179, .09);
+      box-shadow: inset 3px 0 0 #c8d3d9;
+    }
+
+    .answer-mark {
+      display: inline-grid;
+      width: 21px;
+      height: 21px;
+      place-items: center;
+      border: 1px solid #53636e;
+      border-radius: 50%;
+      color: #93a4ae;
+      font-size: .67rem;
+      line-height: 1;
+    }
+
+    .answer[aria-pressed="true"][data-pole="eternal"] .answer-mark {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .answer[aria-pressed="true"][data-pole="fatalist"] .answer-mark {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .quiz-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .action-group { display: flex; gap: 9px; }
+    .button:disabled { cursor: not-allowed; opacity: .42; transform: none; }
+
+    .debate-step { animation: reveal-up .42s cubic-bezier(.2,.75,.25,1) both; }
+
+    .counterpoint-card {
+      position: relative;
+      margin: 6px 0 25px;
+      padding: 20px 22px 21px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 83, 103, .32);
+      border-radius: 14px;
+      background: linear-gradient(130deg, rgba(101, 23, 37, .18), rgba(8, 11, 17, .88) 72%);
+    }
+
+    .counterpoint-card[data-challenge="eternal"] {
+      border-color: rgba(99, 231, 255, .32);
+      background: linear-gradient(130deg, rgba(23, 80, 97, .2), rgba(8, 11, 17, .88) 72%);
+    }
+
+    .counterpoint-card[data-challenge="neutral"] {
+      border-color: rgba(168, 181, 190, .28);
+      background: linear-gradient(130deg, rgba(65, 76, 86, .16), rgba(8, 11, 17, .88) 72%);
+    }
+
+    .counterpoint-card::before {
+      position: absolute;
+      top: -38px;
+      right: -28px;
+      width: 135px;
+      height: 135px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      color: rgba(255, 83, 103, .14);
+      content: "";
+      box-shadow: 0 0 0 15px rgba(255, 83, 103, .025), 0 0 0 31px rgba(255, 83, 103, .018);
+    }
+
+    .counterpoint-card[data-challenge="eternal"]::before {
+      color: rgba(99, 231, 255, .15);
+      box-shadow: 0 0 0 15px rgba(99, 231, 255, .025), 0 0 0 31px rgba(99, 231, 255, .018);
+    }
+
+    .counterpoint-card[data-challenge="neutral"]::before {
+      color: rgba(185, 198, 207, .12);
+      box-shadow: 0 0 0 15px rgba(185, 198, 207, .02), 0 0 0 31px rgba(185, 198, 207, .015);
+    }
+
+    .counterpoint-label {
+      position: relative;
+      display: block;
+      margin-bottom: 8px;
+      color: var(--red-bright);
+      font-size: .72rem;
+      font-weight: 750;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .counterpoint-card[data-challenge="eternal"] .counterpoint-label { color: var(--cyan); }
+    .counterpoint-card[data-challenge="neutral"] .counterpoint-label { color: #c2cbd0; }
+    .counterpoint-card p { position: relative; max-width: 650px; margin: 0; color: #e3edf1; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.12rem, 2.4vw, 1.42rem); line-height: 1.42; }
+    .choice-echo { margin: 0 0 17px; padding-left: 12px; border-left: 2px solid #89969c; }
+    .choice-echo[data-pole="eternal"] { border-color: var(--cyan); }
+    .choice-echo[data-pole="fatalist"] { border-color: var(--red); }
+    .choice-echo span { display: block; margin-bottom: 2px; color: #7f9098; font-size: .68rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    .choice-echo p { margin: 0; color: #aebcc2; font-size: .85rem; }
+    .debate-prompt { margin: 0 0 13px; color: #bdcbd1; font-size: .91rem; }
+    .debate-answer { min-height: 62px; }
+    .rebuttal-copy { display: grid; gap: 3px; }
+    .rebuttal-copy strong { color: #a8bdc5; font-size: .7rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+
+    .debate-summary {
+      margin: 29px 0 0;
+      padding: 20px;
+      border: 1px solid rgba(137, 157, 169, .2);
+      border-radius: 14px;
+      background: linear-gradient(130deg, rgba(22, 30, 41, .75), rgba(8, 11, 16, .7));
+    }
+
+    .debate-summary h3 { margin: 0 0 8px; font-size: .94rem; }
+    .debate-summary p { margin: 0; color: #adbdc4; font-size: .87rem; }
+    .debate-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .debate-stat { padding: 6px 10px; border: 1px solid #2a3740; border-radius: 999px; color: #aab9c0; background: rgba(4, 7, 11, .55); font-size: .76rem; }
+    .debate-stat strong { margin-right: 4px; color: var(--cyan); font-variant-numeric: tabular-nums; }
+    .debate-summary .debate-note { margin-top: 13px; color: #7f9098; font-size: .75rem; }
+
+    .result-name { margin: -6px 0 13px; color: #9fadb5; font-size: .9rem; }
+    .result-name strong { color: #e4f4f7; font-weight: 650; }
+
+    .result-panel { padding: clamp(23px, 5vw, 42px); }
+
+    .result-panel:not([hidden]) { animation: reveal-up .7s cubic-bezier(.2,.75,.25,1) both; }
+
+    .verdict {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      margin: 0 0 15px;
+      padding: 5px 11px;
+      border: 1px solid rgba(99, 231, 255, .45);
+      border-radius: 999px;
+      color: var(--cyan);
+      background: rgba(99, 231, 255, .07);
+      font-size: .79rem;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+
+    .verdict.fatalist {
+      border-color: rgba(255, 83, 103, .5);
+      color: var(--red-bright);
+      background: rgba(255, 83, 103, .07);
+    }
+
+    .verdict.eternal {
+      border-color: rgba(99, 231, 255, .52);
+      color: var(--cyan-bright);
+      background: rgba(99, 231, 255, .07);
+    }
+
+    .verdict.mixed {
+      border-color: #48535b;
+      color: #c8d0d5;
+      background: rgba(161, 178, 187, .07);
+    }
+
+    .result-summary {
+      max-width: 730px;
+      color: #bdcbd1;
+      font-size: 1rem;
+    }
+
+    .balance {
+      margin: 27px 0 30px;
+      padding: 17px 18px 16px;
+      border: 1px solid #27313a;
+      border-radius: 14px;
+      background: rgba(5, 8, 13, .65);
+    }
+
+    .balance-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 12px;
+    }
+
+    .balance-heading strong { font-size: .93rem; }
+    .balance-heading span { color: var(--muted); font-size: .82rem; }
+
+    .balance-track {
+      position: relative;
+      height: 10px;
+      overflow: visible;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--red), #4a4249 50%, var(--cyan));
+      box-shadow: 0 0 24px rgba(87, 181, 198, .08);
+    }
+
+    .balance-center {
+      position: absolute;
+      top: -4px;
+      bottom: -4px;
+      left: 50%;
+      width: 1px;
+      background: rgba(255, 255, 255, .62);
+    }
+
+    .balance-marker {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 19px;
+      height: 19px;
+      border: 3px solid #181a22;
+      border-radius: 50%;
+      background: #e9faff;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, .7), 0 0 16px rgba(99, 231, 255, .55), 0 3px 12px rgba(0, 0, 0, .5);
+      transform: translate(-50%, -50%);
+      transition: left .4s ease;
+    }
+
+    .balance-marker.fatalist {
+      background: #fff0f2;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, .7), 0 0 16px rgba(255, 83, 103, .6), 0 3px 12px rgba(0, 0, 0, .5);
+    }
+
+    .balance-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    .axis-section { margin: 30px 0; }
+    .axis-section h3, .reflection h3 {
+      margin: 0 0 14px;
+      font-size: .91rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .axis-list { display: grid; gap: 17px; }
+    .axis-item { min-width: 0; }
+
+    .axis-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 7px;
+      font-size: .83rem;
+    }
+
+    .axis-head span:first-child { color: #e4f0f4; font-weight: 600; }
+    .axis-head span:last-child { color: var(--muted); text-align: right; }
+
+    .axis-track {
+      position: relative;
+      height: 6px;
+      border-radius: 99px;
+      background: #252d36;
+    }
+
+    .axis-track::before {
+      position: absolute;
+      top: -3px;
+      bottom: -3px;
+      left: 50%;
+      width: 1px;
+      background: #67737c;
+      content: "";
+    }
+
+    .axis-marker {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 13px;
+      height: 13px;
+      border: 2px solid #181a22;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.4);
+      transform: translate(-50%, -50%);
+    }
+
+    .axis-marker.fatalist { background: var(--red); }
+    .axis-caption {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 5px;
+      color: #898995;
+      font-size: .7rem;
+    }
+
+    .axis-caption span:first-child { color: var(--red-bright); }
+    .axis-caption span:last-child { color: var(--cyan); }
+
+    .reflection {
+      margin: 30px 0 0;
+      padding: 19px 20px;
+      border-left: 2px solid var(--cyan);
+      border-radius: 0 12px 12px 0;
+      background: linear-gradient(90deg, rgba(99, 231, 255, .07), rgba(255, 83, 103, .035));
+    }
+
+    .reflection p {
+      margin: 0;
+      color: #cedbe0;
+      font-size: .93rem;
+    }
+
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 27px;
+    }
+
+    .footnote {
+      max-width: 800px;
+      margin: 22px auto 0;
+      color: #898994;
+      font-size: .77rem;
+      text-align: center;
+    }
+
+    .toast {
+      min-height: 1.4em;
+      margin: 10px 0 0;
+      color: var(--cyan);
+      font-size: .82rem;
+    }
+
+    .read-more {
+      margin-top: 28px;
+      border-top: 1px solid rgba(147, 173, 187, .2);
+      border-bottom: 1px solid rgba(147, 173, 187, .2);
+    }
+
+    .read-more summary {
+      position: relative;
+      padding: 19px 34px 19px 0;
+      color: #d8e7ec;
+      font-weight: 650;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .read-more summary::-webkit-details-marker { display: none; }
+
+    .read-more summary::after {
+      position: absolute;
+      top: 50%;
+      right: 4px;
+      color: var(--cyan);
+      content: "+";
+      font-size: 1.35rem;
+      font-weight: 400;
+      transform: translateY(-52%);
+      transition: transform .25s ease;
+    }
+
+    .read-more[open] summary::after { transform: translateY(-52%) rotate(45deg); }
+
+    .read-more summary:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    .ideology-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
+      padding: 0 0 20px;
+      animation: reveal-up .38s ease both;
+    }
+
+    .ideology-card {
+      padding: 19px 19px 17px;
+      border: 1px solid rgba(119, 144, 157, .18);
+      border-radius: 14px;
+      background: rgba(4, 7, 11, .6);
+    }
+
+    .ideology-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.27rem;
+      font-weight: 500;
+    }
+
+    .ideology-card h3::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 15px currentColor;
+      content: "";
+    }
+
+    .ideology-card p { margin: 0 0 12px; color: #b1c0c7; font-size: .88rem; }
+    .ideology-card p:last-child { margin-bottom: 0; }
+    .ideology-card.eternal h3 { color: var(--cyan); }
+    .ideology-card.fatalist h3 { color: var(--red-bright); }
+    .ideology-card .reference { color: #8d9ba2; font-size: .8rem; }
+
+    .question-arrive { animation: question-flare .5s ease both; }
+
+    @keyframes question-flare {
+      0% { box-shadow: 0 0 0 rgba(99, 231, 255, 0); }
+      35% { box-shadow: 0 0 65px rgba(99, 231, 255, .06); }
+      100% { box-shadow: 0 30px 90px rgba(0, 0, 0, .46), 0 0 70px rgba(46, 138, 164, .075); }
+    }
+
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 24px, 920px); padding-top: 22px; }
+      .ambient-light span { width: 110vw; }
+      .ambient-cyan { left: -48vw; top: 2vh; }
+      .ambient-light .ambient-red { top: 31vh; right: -48vw; }
+      .hero { padding-top: 10px; }
+      .fracture-mark { width: 70px; height: 70px; margin-bottom: 24px; }
+      .hero .fracture-mark { margin-bottom: 24px; }
+      .start-panel { margin-top: 26px; }
+      .start-options { margin: 20px 0 23px; }
+      .quiz-actions { align-items: stretch; }
+      .quiz-actions .action-group { flex: 1; justify-content: flex-end; }
+      .quiz-actions .button { padding-inline: 13px; }
+      .axis-head { align-items: flex-start; flex-direction: column; gap: 2px; }
+      .axis-head span:last-child { text-align: left; }
+      .ideology-grid { grid-template-columns: 1fr; }
+      .ideology-card { padding: 16px; }
+      .counterpoint-card { padding: 17px 18px; }
+      .debate-summary { padding: 17px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+      .ambient-light span, .fracture-mark, .fracture-orbit, .hero, .panel, .result-panel:not([hidden]), .debate-step, .question-arrive, .ideology-grid { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-light" aria-hidden="true"><span class="ambient-cyan"></span><span class="ambient-red"></span></div>
+  <main class="shell">
+    <header class="hero">
+      <div class="fracture-mark" aria-hidden="true"><span class="fracture-orbit orbit-cyan"></span><span class="fracture-orbit orbit-red"></span><span class="fracture-core"></span></div>
+      <p class="eyebrow">Um teste de personagem</p>
+      <h1>O que você escolheria <em>preservar?</em></h1>
+      <p class="hero-copy">Responda pelos olhos do personagem. No fim, descubra para qual lado suas convicções tendem — e onde ainda existe conflito.</p>
+    </header>
+
+    <section id="start-screen" class="panel start-panel">
+      <p class="eyebrow">Uma leitura aproximada</p>
+      <h2>Não existe resposta certa. Existe a escolha que ele faria.</h2>
+      <p>16 dilemas sobre recomeço, memória, autonomia e sacrifício. Se uma pergunta não combinar com ele, pode pular.</p>
+      <div class="start-options">
+        <div>
+          <label class="field-label" for="player-name">Nome do personagem (ou o seu)</label>
+          <input class="name-input" id="player-name" type="text" maxlength="40" autocomplete="off" placeholder="Ex.: Cael">
+        </div>
+        <label class="mode-toggle" for="debate-mode">
+          <input id="debate-mode" type="checkbox">
+          <span class="mode-toggle-copy"><strong>Ativar modo debate</strong><span>Depois de cada escolha, responda a um argumento contrário. No resultado, veja como ele lida com críticas.</span></span>
+        </label>
+      </div>
+      <div class="meta-row"><span>16 dilemas</span><span>Sem resposta certa</span></div>
+      <button class="button" id="start-button" type="button">Começar o teste</button>
+    </section>
+
+    <section id="quiz-screen" class="panel quiz-panel" hidden aria-label="Perguntas e modo debate">
+      <div class="quiz-top">
+        <span id="category-label">Dimensão</span>
+        <span class="step-count" id="step-count">Pergunta 1 de 16</span>
+      </div>
+      <div class="progress-track" role="progressbar" aria-label="Progresso do teste" aria-valuemin="0" aria-valuemax="16" aria-valuenow="0" id="progress">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div id="question-step">
+        <h2 class="question-title" id="question-title" tabindex="-1"></h2>
+        <div class="answer-list" id="answer-list" role="group" aria-labelledby="question-title"></div>
+        <div class="quiz-actions">
+          <button class="button quiet" id="back-button" type="button">Voltar</button>
+          <div class="action-group">
+            <button class="button secondary" id="skip-button" type="button">Pular</button>
+            <button class="button" id="next-button" type="button" disabled>Continuar</button>
+          </div>
+        </div>
+      </div>
+      <div id="debate-step" class="debate-step" hidden>
+        <p class="eyebrow">Contraponto</p>
+        <div class="choice-echo" id="choice-echo" data-pole="neutral">
+          <span>Sua escolha</span>
+          <p id="choice-echo-text"></p>
+        </div>
+        <div class="counterpoint-card" id="counterpoint-card" data-challenge="fatalist">
+          <span class="counterpoint-label" id="counterpoint-label">Argumento Fatalista</span>
+          <p id="counterpoint-text"></p>
+        </div>
+        <p class="debate-prompt">Como <span id="debater-name">o personagem</span> responde?</p>
+        <div class="answer-list" id="rebuttal-list" role="group" aria-label="Respostas ao contraponto"></div>
+        <div class="quiz-actions">
+          <button class="button secondary" id="debate-back-button" type="button">Rever escolha</button>
+          <button class="button" id="debate-next-button" type="button" disabled>Continuar</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="result-screen" class="panel result-panel" hidden aria-live="polite">
+      <p class="eyebrow">Leitura aproximada</p>
+      <p class="result-name" id="result-name" hidden></p>
+      <div id="verdict" class="verdict"></div>
+      <h2 id="result-title" tabindex="-1"></h2>
+      <p id="result-summary" class="result-summary"></p>
+
+      <div class="balance" aria-label="Balanço entre as duas tendências">
+        <div class="balance-heading">
+          <strong>Inclinação geral</strong>
+          <span id="score-label">Em equilíbrio</span>
+        </div>
+        <div class="balance-track" role="img" id="balance-track" aria-label="Balanço entre Fatalistas e Elo Eterno">
+          <span class="balance-center" aria-hidden="true"></span>
+          <span class="balance-marker" id="balance-marker" aria-hidden="true"></span>
+        </div>
+        <div class="balance-labels"><span>Fatalistas</span><span>Entre os dois</span><span>Elo Eterno</span></div>
+      </div>
+
+      <div class="axis-section">
+        <h3>Como essa inclinação aparece</h3>
+        <div class="axis-list" id="axis-list"></div>
+      </div>
+
+      <div class="reflection">
+        <h3>Uma tensão para explorar no personagem</h3>
+        <p id="tension-text"></p>
+      </div>
+
+      <section class="debate-summary" id="debate-summary" hidden>
+        <h3>Como lidou com os contrapontos</h3>
+        <p id="debate-profile"></p>
+        <div class="debate-stats" id="debate-stats"></div>
+        <p class="debate-note">A inclinação entre o Elo e os Fatalistas vem das escolhas dos dilemas; este perfil mostra como respondeu às críticas.</p>
+      </section>
+
+      <p class="footnote" id="answered-note"></p>
+      <details class="read-more">
+        <summary>Ler mais sobre as duas ideologias</summary>
+        <div class="ideology-grid">
+          <article class="ideology-card eternal">
+            <h3>Elo Eterno</h3>
+            <p>O Elo quer manter aberta a possibilidade de um novo começo. Um ciclo pode ser uma oportunidade de impedir uma tragédia, corrigir uma escolha ou alcançar alguém que foi perdido. Essa esperança pode nascer da compaixão, da culpa ou do medo de que uma perda se torne definitiva.</p>
+            <p>A tensão do Elo está em lembrar que cada tentativa tem um custo: insistir em salvar alguém pode transformar as vidas de uma realidade em versões descartáveis.</p>
+            <p class="reference">Como referência pontual, a rota da Ganância de <i>Re:Zero</i> evoca a tentação de tentar de novo até alcançar um resultado ideal.</p>
+          </article>
+          <article class="ideology-card fatalist">
+            <h3>Fatalistas</h3>
+            <p>Para os Fatalistas, uma vida não deixa de ter existido porque o mundo recomeçou. Relações, escolhas e perdas tiveram valor para quem as viveu, mesmo que ninguém mais se lembre. Ninguém deveria decidir sozinho que todos precisam começar outra vez.</p>
+            <p>A tensão Fatalista é defender o direito de chegar ao fim sem impor esse fim a todos os outros. O nome não determina a personalidade nem exige que a pessoa acredite que tudo está predestinado.</p>
+            <p class="reference">A rota da Preguiça de <i>Re:Zero</i> pode servir como analogia emocional: uma vida alternativa inteira pode importar para quem a viveu, mesmo quando o caminho principal não a reconhece.</p>
+          </article>
+        </div>
+        <p class="footnote">Os dois lados podem agir por amor à mesma pessoa. O Elo teme perder a chance de salvá-la; o Fatalista teme que a tentativa apague a vida que ela já teve. Nenhum lado é uma raça, um inimigo natural ou uma resposta moral obrigatória.</p>
+      </details>
+      <div class="result-actions">
+        <button class="button" id="copy-button" type="button">Copiar veredito</button>
+        <button class="button secondary" id="edit-button" type="button">Rever respostas</button>
+        <button class="button quiet" id="restart-button" type="button">Recomeçar</button>
+      </div>
+      <p class="toast" id="copy-status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const axes = {
+        cycle: {
+          label: "Recomeço e consequência",
+          left: "Valoriza a vida já vivida",
+          right: "Confia na chance de recomeçar",
+          leftText: "Seu personagem dá mais peso às consequências e à realidade das vidas que já foram vividas.",
+          rightText: "Seu personagem tende a ver uma nova tentativa como uma possibilidade importante de mudar o futuro."
+        },
+        identity: {
+          label: "Identidade entre ciclos",
+          left: "Cada vida tem sua própria história",
+          right: "A continuidade pode atravessar ciclos",
+          leftText: "Seu personagem percebe cada versão e cada vínculo como algo que não pode ser simplesmente substituído.",
+          rightText: "Seu personagem tende a reconhecer uma continuidade entre ciclos, mesmo quando memórias ou circunstâncias mudam."
+        },
+        autonomy: {
+          label: "Autonomia e consentimento",
+          left: "Consentimento de quem será afetado",
+          right: "Manter aberta a possibilidade",
+          leftText: "Seu personagem desconfia de decisões que alteram a vida de todos sem que eles possam participar.",
+          rightText: "Seu personagem tende a preservar a possibilidade de escolha futura, mesmo quando não há consenso imediato."
+        },
+        limits: {
+          label: "Limites e sacrifício",
+          left: "Há custos que não devem ser impostos",
+          right: "Aceita riscos por um futuro melhor",
+          leftText: "Seu personagem resiste a transformar pessoas em custos aceitáveis de um plano, mesmo por uma causa importante.",
+          rightText: "Seu personagem pode aceitar riscos e perdas quando acredita que isso ainda pode salvar mais vidas."
+        }
+      };
+
+      const counterpoints = {
+        cycle: {
+          eternal: "Você está chamando de segunda chance algo que pode apagar uma vida inteira. Quem deu ao seu personagem o direito de decidir que essa vida pode ser refeita?",
+          fatalist: "Se uma nova tentativa pode impedir a tragédia, recusar qualquer recomeço também escolhe um desfecho. Por que aceitar a perda seria mais justo?",
+          neutral: "Adiar a decisão mantém o mecanismo ativo — isso também pode favorecer um dos lados. O que seu personagem arrisca ao esperar?"
+        },
+        identity: {
+          eternal: "Se cada ciclo muda vínculos, memórias ou escolhas, talvez você esteja defendendo a continuidade de alguém que já não é a mesma pessoa.",
+          fatalist: "Se alguém mantém memória, vontade ou laços através dos ciclos, chamar cada recomeço de apagamento pode ignorar a continuidade que essa pessoa sente.",
+          neutral: "Se não sabe o que permanece, por que presumir que o ciclo apaga tudo — ou que preserva alguém?"
+        },
+        autonomy: {
+          eternal: "Preservar uma possibilidade para todos também pode impor um reinício a quem nunca consentiu.",
+          fatalist: "Exigir que todos concordem antes de agir pode deixar alguém sem a chance de escolher uma nova vida.",
+          neutral: "Não escolher também pode deixar alguém decidir no lugar do personagem. Quem você está deixando agir?"
+        },
+        limits: {
+          eternal: "Aceitar o sacrifício de alguém em nome de um futuro melhor transforma essa pessoa num meio. Qual limite seu personagem não atravessaria?",
+          fatalist: "Recusar o custo de uma tentativa também tem consequências: quantas perdas evitáveis ele aceitaria para não correr o risco de recomeçar?",
+          neutral: "Toda escolha tem custo; esperar por certeza pode deixar a tragédia acontecer. Como ele decide quanto é prova suficiente?"
+        }
+      };
+
+      const rebuttals = {
+        eternal: [
+          { style: "reconsider", text: "Essa objeção tem peso. Preciso saber se existe uma forma de tentar que preserve a história e a escolha de quem será afetado." },
+          { style: "condition", text: "Mantenho a chance de recomeçar, mas exijo transparência, limites e escuta de quem pagará o preço." },
+          { style: "defend", text: "A crítica não elimina a possibilidade de impedir a tragédia. Desistir também escolhe um desfecho." }
+        ],
+        fatalist: [
+          { style: "reconsider", text: "Talvez eu esteja tratando todo recomeço como apagamento. Preciso entender o que realmente continua antes de decidir." },
+          { style: "condition", text: "Posso considerar uma tentativa se houver consentimento e reconhecimento do que já foi vivido." },
+          { style: "defend", text: "Salvar alguém não torna as outras vidas descartáveis. A esperança não dá a ninguém o direito de decidir por todos." }
+        ],
+        neutral: [
+          { style: "reconsider", text: "Essa crítica muda minha prioridade. Preciso descobrir qual dessas perdas seria irreversível." },
+          { style: "condition", text: "Só aceito agir com informação, participação de quem será afetado e um limite claro." },
+          { style: "defend", text: "A dúvida não remove a responsabilidade. Não agir também muda o destino de alguém." }
+        ]
+      };
+
+      const debateStyleLabels = {
+        reconsider: "Reconsiderou",
+        condition: "Colocou condições",
+        defend: "Defendeu a convicção"
+      };
+
+      const debateChoiceLabels = {
+        reconsider: "Reconsidera",
+        condition: "Coloca condições",
+        defend: "Defende a convicção"
+      };
+
+      const questions = [
+        {
+          axis: "cycle",
+          prompt: "Uma catástrofe poderia ser evitada reiniciando a realidade inteira. Qual é o primeiro impulso do personagem?",
+          answers: [
+            { value: 2, text: "Preservar o ciclo. Uma chance de impedir a catástrofe é preciosa demais para ser encerrada." },
+            { value: 1, text: "Manter a opção de reiniciar, mas procurar um caminho com menos consequências." },
+            { value: 0, text: "Descobrir primeiro o que o reinício mudaria e quem seria afetado." },
+            { value: -1, text: "Só considerar o reinício depois de ouvir quem teria a vida alterada." },
+            { value: -2, text: "Recusar uma decisão que apaga a realidade inteira sem o consentimento de todos." }
+          ]
+        },
+        {
+          axis: "cycle",
+          prompt: "O personagem é o único que se lembra de um ciclo anterior que terminou em tragédia. O que faz com essa lembrança?",
+          answers: [
+            { value: 2, text: "Usa o que lembra para tentar construir um resultado melhor desta vez." },
+            { value: 1, text: "Compartilha a memória e tenta manter aberta a possibilidade de corrigir o que aconteceu." },
+            { value: 0, text: "Registra o que sabe, mas não decide ainda se o ciclo deve continuar." },
+            { value: -1, text: "Trata a lembrança como prova de que a vida anterior merece ser reconhecida." },
+            { value: -2, text: "Recusa que a memória de uma pessoa seja usada para justificar outro reinício coletivo." }
+          ]
+        },
+        {
+          axis: "cycle",
+          prompt: "O ciclo pode oferecer outra tentativa, mas ninguém garante que o próximo resultado será melhor. Como o personagem reage?",
+          answers: [
+            { value: 2, text: "A possibilidade já basta para continuar tentando; desistir fecharia uma porta para sempre." },
+            { value: 1, text: "Aceita tentar novamente se houver uma chance real de aprender com o que ocorreu." },
+            { value: 0, text: "Pesa a chance de melhorar contra o que pode ser perdido no processo." },
+            { value: -1, text: "Não confunde a existência de outra tentativa com a garantia de reparação." },
+            { value: -2, text: "Prefere enfrentar as consequências presentes a apostar outra realidade em uma promessa." }
+          ]
+        },
+        {
+          axis: "cycle",
+          prompt: "Se os ciclos terminarem, talvez nunca mais exista outra chance de corrigir uma perda. O que isso significa para o personagem?",
+          answers: [
+            { value: 2, text: "É um risco terrível: fechar a possibilidade pode condenar pessoas a perdas evitáveis." },
+            { value: 1, text: "É doloroso, mas talvez seja possível proteger o ciclo sem deixá-lo sem limites." },
+            { value: 0, text: "É uma perda e uma libertação; o personagem não sabe qual pesa mais." },
+            { value: -1, text: "Uma vida finita ainda pode ter valor sem a promessa de consertar tudo." },
+            { value: -2, text: "Chegar ao fim precisa ser uma possibilidade real, mesmo que algumas dores não possam ser desfeitas." }
+          ]
+        },
+        {
+          axis: "identity",
+          prompt: "Em um novo ciclo, alguém querido aparece com o mesmo rosto, mas sem lembrar da relação que vocês tiveram. Como o personagem entende essa pessoa?",
+          answers: [
+            { value: 2, text: "Como a mesma pessoa, ainda que seja preciso reconstruir a relação." },
+            { value: 1, text: "Como alguém ligado à pessoa que conheceu, com espaço para uma nova história." },
+            { value: 0, text: "Não sabe; precisa conviver antes de decidir o que essa continuidade significa." },
+            { value: -1, text: "Como uma pessoa própria, que não tem obrigação de herdar o vínculo anterior." },
+            { value: -2, text: "Como alguém que não deve ser usado para substituir a pessoa que foi perdida." }
+          ]
+        },
+        {
+          axis: "identity",
+          prompt: "Só o personagem se lembra de uma vida inteira que o resto do mundo esqueceu. O que torna aquela vida real?",
+          answers: [
+            { value: 2, text: "Ela continua dentro dele e pode orientar o que fará nesta nova oportunidade." },
+            { value: 1, text: "A memória preserva parte daquela vida, ainda que o ciclo tenha mudado tudo." },
+            { value: 0, text: "A experiência é real para ele; o que isso significa para os outros ainda é incerto." },
+            { value: -1, text: "As escolhas e os vínculos daquela vida têm valor, mesmo sem testemunhas." },
+            { value: -2, text: "Ela existiu por ter sido vivida; o esquecimento do mundo não pode anulá-la." }
+          ]
+        },
+        {
+          axis: "identity",
+          prompt: "O personagem encontra uma versão de si que nunca viveu as mesmas perdas. Como reage?",
+          answers: [
+            { value: 2, text: "Vê uma continuidade possível e quer ajudar essa versão a evitar os mesmos erros." },
+            { value: 1, text: "Sente que compartilham algo essencial, mesmo sendo pessoas diferentes em muitos aspectos." },
+            { value: 0, text: "Não sabe se vê outro eu, um estranho ou as duas coisas ao mesmo tempo." },
+            { value: -1, text: "Reconhece a semelhança, mas acredita que cada história forma uma pessoa própria." },
+            { value: -2, text: "Não reivindica para si a vida dessa versão; ela pertence às escolhas que ainda fará." }
+          ]
+        },
+        {
+          axis: "identity",
+          prompt: "O que mais assusta o personagem quando imagina um novo começo?",
+          answers: [
+            { value: 2, text: "Que ninguém tenha a chance de voltar e fazer diferente." },
+            { value: 1, text: "Perder pessoas de novo, sem conseguir usar o que aprendeu para protegê-las." },
+            { value: 0, text: "Não saber se um recomeço preserva alguma coisa ou substitui tudo." },
+            { value: -1, text: "Que suas lembranças sejam as únicas provas de relações que deixaram de existir." },
+            { value: -2, text: "Que uma vida inteira seja reduzida a uma versão descartável de outra." }
+          ]
+        },
+        {
+          axis: "autonomy",
+          prompt: "O reinício talvez impeça uma tragédia iminente, mas as pessoas afetadas não sabem que os ciclos existem. O que o personagem faria?",
+          answers: [
+            { value: 2, text: "Agiria para preservar a chance de salvá-las; explicaria depois, se sobrevivessem." },
+            { value: 1, text: "Tentaria obter consentimento, mas não deixaria o tempo acabar sem agir." },
+            { value: 0, text: "Procuraria uma forma de revelar a verdade e evitar uma decisão precipitada." },
+            { value: -1, text: "A urgência não apaga o direito das pessoas de saber o que está em jogo." },
+            { value: -2, text: "Não aceitaria que alguém reiniciasse a realidade inteira em nome de pessoas que não puderam escolher." }
+          ]
+        },
+        {
+          axis: "autonomy",
+          prompt: "Uma única pessoa controla o mecanismo dos ciclos. Qual posição o personagem defenderia?",
+          answers: [
+            { value: 2, text: "Preservar esse controle, desde que a pessoa use o poder para manter novas chances." },
+            { value: 1, text: "Manter o mecanismo, mas criar limites e responsabilidade para quem o controla." },
+            { value: 0, text: "Suspender qualquer uso até que mais pessoas compreendam o que ele faz." },
+            { value: -1, text: "Retirar o poder de uma só pessoa e exigir decisão coletiva." },
+            { value: -2, text: "Impedir que alguém tenha autoridade para reiniciar a vida de todos." }
+          ]
+        },
+        {
+          axis: "autonomy",
+          prompt: "A maioria quer preservar os ciclos, mas uma parte da população se recusa a recomeçar. Como o personagem interpreta esse desacordo?",
+          answers: [
+            { value: 2, text: "A maioria pode preservar a possibilidade para todos, inclusive para quem ainda discorda." },
+            { value: 1, text: "A maioria decide, mas deve proteger quem teme os ciclos." },
+            { value: 0, text: "O personagem tentaria encontrar uma alternativa que não obrigue ninguém." },
+            { value: -1, text: "Quem será diretamente afetado precisa participar da decisão." },
+            { value: -2, text: "Uma maioria não pode transformar a vida de uma minoria em algo revogável." }
+          ]
+        },
+        {
+          axis: "autonomy",
+          prompt: "Qual dessas ideias de liberdade mais se aproxima do personagem?",
+          answers: [
+            { value: 2, text: "Ter a chance de refazer uma escolha quando ela leva a uma tragédia." },
+            { value: 1, text: "Poder escolher de novo, desde que o recomeço não seja imposto sem cuidado." },
+            { value: 0, text: "Escolher entre tentar novamente e aceitar o que já aconteceu." },
+            { value: -1, text: "Tomar decisões sabendo que elas terão consequências reais." },
+            { value: -2, text: "Decidir a própria vida inclui poder chegar ao fim sem ser reiniciado por outra pessoa." }
+          ]
+        },
+        {
+          axis: "limits",
+          prompt: "Um reinício pode salvar muitas pessoas, mas exige que alguém seja tratado como parte do custo. O que o personagem considera aceitável?",
+          answers: [
+            { value: 2, text: "Aceitar o custo se isso der uma chance concreta de salvar muito mais vidas." },
+            { value: 1, text: "Aceitar apenas se a pessoa puder escolher e nenhuma alternativa funcionar." },
+            { value: 0, text: "Não existe uma conta simples; o personagem precisaria conhecer as pessoas e os riscos." },
+            { value: -1, text: "O benefício para muitos não dá a alguém o direito de impor o sacrifício a um indivíduo." },
+            { value: -2, text: "Recusar que qualquer pessoa seja reduzida a uma peça descartável de um plano." }
+          ]
+        },
+        {
+          axis: "limits",
+          prompt: "O personagem sabe que cada tentativa o desgasta, mas continuar pode ajudar pessoas que ainda estão vivas. Até onde ele iria?",
+          answers: [
+            { value: 2, text: "Continuaria enquanto houvesse uma possibilidade de alcançar um futuro melhor." },
+            { value: 1, text: "Aceitaria o próprio custo se as pessoas que ama ainda pudessem ser salvas." },
+            { value: 0, text: "Precisaria de aliados para decidir; não confia em si para medir esse limite sozinho." },
+            { value: -1, text: "O sofrimento acumulado também importa e não pode ser apagado por um bom resultado." },
+            { value: -2, text: "Não aceitaria transformar a própria vida em um instrumento que pode ser usado sem fim." }
+          ]
+        },
+        {
+          axis: "limits",
+          prompt: "Uma pessoa querida, tomada pelo luto, pede que o personagem provoque outro ciclo para tentar recuperar alguém. O que ele faz?",
+          answers: [
+            { value: 2, text: "Ajuda; talvez ainda seja possível salvar quem foi perdido." },
+            { value: 1, text: "Fica ao lado dela e busca uma forma de tentar sem colocar todos em risco." },
+            { value: 0, text: "Reconhece o luto, mas precisa entender o que a tentativa faria com os demais." },
+            { value: -1, text: "Pergunta quem mais pagará o preço por uma decisão tomada no desespero." },
+            { value: -2, text: "Recusa tratar outra realidade como meio de recuperar alguém que não está mais ali." }
+          ]
+        },
+        {
+          axis: "limits",
+          prompt: "Que descoberta teria mais chance de mudar a posição do personagem?",
+          answers: [
+            { value: 2, text: "Prova de que um ciclo consegue impedir uma tragédia sem destruir as vidas que vieram antes." },
+            { value: 1, text: "A certeza de que as pessoas afetadas podem escolher participar do recomeço." },
+            { value: 0, text: "Uma explicação confiável sobre o que continua existindo depois de cada ciclo." },
+            { value: -1, text: "Prova de que um recomeço apaga vínculos e experiências sem possibilidade de reparação." },
+            { value: -2, text: "A confirmação de que alguém está usando o ciclo para decidir sozinho o destino de todos." }
+          ]
+        }
+      ];
+
+      const startScreen = document.getElementById("start-screen");
+      const quizScreen = document.getElementById("quiz-screen");
+      const resultScreen = document.getElementById("result-screen");
+      const questionStep = document.getElementById("question-step");
+      const debateStep = document.getElementById("debate-step");
+      const answerList = document.getElementById("answer-list");
+      const rebuttalList = document.getElementById("rebuttal-list");
+      const nextButton = document.getElementById("next-button");
+      const backButton = document.getElementById("back-button");
+      const skipButton = document.getElementById("skip-button");
+      const debateNextButton = document.getElementById("debate-next-button");
+      const debateBackButton = document.getElementById("debate-back-button");
+      const progress = document.getElementById("progress");
+      const progressFill = document.getElementById("progress-fill");
+      const playerNameInput = document.getElementById("player-name");
+      const debateModeInput = document.getElementById("debate-mode");
+      const answers = new Array(questions.length).fill(null);
+      const debateResponses = new Array(questions.length).fill(null);
+      let currentIndex = 0;
+      let resultSummaryText = "";
+      let playerName = "";
+      let debateModeEnabled = false;
+
+      function showScreen(screen) {
+        startScreen.hidden = screen !== "start";
+        quizScreen.hidden = screen !== "quiz";
+        resultScreen.hidden = screen !== "result";
+        if (screen === "quiz" || screen === "result") {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+
+      function renderQuestion() {
+        const question = questions[currentIndex];
+        const axis = axes[question.axis];
+        const selectedValue = answers[currentIndex];
+        questionStep.hidden = false;
+        debateStep.hidden = true;
+        document.getElementById("category-label").textContent = axis.label;
+        document.getElementById("question-title").textContent = question.prompt;
+        document.getElementById("step-count").textContent = "Pergunta " + (currentIndex + 1) + " de " + questions.length;
+        progress.setAttribute("aria-valuenow", String(currentIndex + 1));
+        progressFill.style.width = (((currentIndex + 1) / questions.length) * 100) + "%";
+        backButton.disabled = currentIndex === 0;
+        skipButton.hidden = debateModeEnabled && selectedValue !== null;
+        nextButton.textContent = debateModeEnabled && selectedValue !== null ? "Ver contraponto" : currentIndex === questions.length - 1 ? "Ver resultado" : "Continuar";
+        nextButton.disabled = selectedValue === null;
+        answerList.replaceChildren();
+
+        question.answers.forEach(function (answer, answerIndex) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "answer";
+          button.setAttribute("data-value", String(answer.value));
+          button.setAttribute("data-pole", answer.value > 0 ? "eternal" : answer.value < 0 ? "fatalist" : "neutral");
+          button.setAttribute("aria-pressed", String(selectedValue === answer.value));
+          button.innerHTML = '<span class="answer-mark" aria-hidden="true">' + String.fromCharCode(65 + answerIndex) + '</span><span></span>';
+          button.lastElementChild.textContent = answer.text;
+          button.addEventListener("click", function () {
+            if (answers[currentIndex] !== answer.value) debateResponses[currentIndex] = null;
+            answers[currentIndex] = answer.value;
+            answerList.querySelectorAll(".answer").forEach(function (option) {
+              option.setAttribute("aria-pressed", String(Number(option.dataset.value) === answer.value));
+            });
+            nextButton.disabled = false;
+            nextButton.textContent = debateModeEnabled ? "Ver contraponto" : currentIndex === questions.length - 1 ? "Ver resultado" : "Continuar";
+            skipButton.hidden = debateModeEnabled;
+            nextButton.focus();
+          });
+          answerList.appendChild(button);
+        });
+        quizScreen.classList.remove("question-arrive");
+        void quizScreen.offsetWidth;
+        quizScreen.classList.add("question-arrive");
+      }
+
+      function selectedSide() {
+        const value = answers[currentIndex];
+        return value > 0 ? "eternal" : value < 0 ? "fatalist" : "neutral";
+      }
+
+      function renderDebate() {
+        const question = questions[currentIndex];
+        const side = selectedSide();
+        const challengeSide = side === "eternal" ? "fatalist" : side === "fatalist" ? "eternal" : "neutral";
+        const counterpointCard = document.getElementById("counterpoint-card");
+        const counterpointLabel = document.getElementById("counterpoint-label");
+        counterpointCard.dataset.challenge = challengeSide;
+        counterpointLabel.textContent = challengeSide === "eternal" ? "Argumento do Elo Eterno" : challengeSide === "fatalist" ? "Argumento Fatalista" : "Uma objeção à indecisão";
+        document.getElementById("counterpoint-text").textContent = counterpoints[question.axis][side];
+        const selectedAnswer = question.answers.find(function (answer) { return answer.value === answers[currentIndex]; });
+        const choiceEcho = document.getElementById("choice-echo");
+        choiceEcho.dataset.pole = side;
+        document.getElementById("choice-echo-text").textContent = selectedAnswer.text;
+        document.getElementById("debater-name").textContent = playerName || "o personagem";
+        questionStep.hidden = true;
+        debateStep.hidden = false;
+        debateNextButton.textContent = currentIndex === questions.length - 1 ? "Ver resultado" : "Continuar";
+        debateNextButton.disabled = debateResponses[currentIndex] === null;
+        rebuttalList.replaceChildren();
+
+        rebuttals[side].forEach(function (rebuttal, rebuttalIndex) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "answer debate-answer";
+          button.setAttribute("data-style", rebuttal.style);
+          button.setAttribute("data-pole", side === "neutral" ? "neutral" : side);
+          button.setAttribute("aria-pressed", String(debateResponses[currentIndex] === rebuttal.style));
+          button.innerHTML = '<span class="answer-mark" aria-hidden="true">' + String.fromCharCode(65 + rebuttalIndex) + '</span><span class="rebuttal-copy"><strong></strong><span></span></span>';
+          button.querySelector("strong").textContent = debateChoiceLabels[rebuttal.style];
+          button.querySelector(".rebuttal-copy span").textContent = rebuttal.text;
+          button.addEventListener("click", function () {
+            debateResponses[currentIndex] = rebuttal.style;
+            rebuttalList.querySelectorAll(".answer").forEach(function (option) {
+              option.setAttribute("aria-pressed", String(option.dataset.style === rebuttal.style));
+            });
+            debateNextButton.disabled = false;
+            debateNextButton.focus();
+          });
+          rebuttalList.appendChild(button);
+        });
+        debateStep.classList.remove("question-arrive");
+        void debateStep.offsetWidth;
+        debateStep.classList.add("question-arrive");
+        const firstRebuttal = rebuttalList.querySelector("button");
+        if (firstRebuttal) firstRebuttal.focus();
+      }
+
+      function getVerdict(score) {
+        if (score >= 65) {
+          return {
+            label: "Inclinação forte ao Elo Eterno",
+            tone: "eternal",
+            title: "Seu personagem tende a manter o recomeço possível.",
+            summary: "Ele parece dar grande valor à chance de mudar um desfecho e proteger futuros que ainda podem ser alcançados. A tensão mais fértil está em como reconhecer o custo de cada ciclo sem deixar que esperança vire autorização ilimitada."
+          };
+        }
+        if (score >= 30) {
+          return {
+            label: "Tendência ao Elo Eterno",
+            tone: "eternal",
+            title: "Seu personagem se inclina a preservar os ciclos.",
+            summary: "Ele tende a ver o recomeço como uma oportunidade que vale proteger, embora suas respostas também mostrem limites ou dúvidas. Talvez apoie os ciclos com condições, salvaguardas ou uma razão muito pessoal."
+          };
+        }
+        if (score >= 12) {
+          return {
+            label: "Leve inclinação ao Elo Eterno",
+            tone: "mixed",
+            title: "A esperança do recomeço pesa um pouco mais.",
+            summary: "Seu personagem parece querer manter aberta a possibilidade de tentar de novo, mas ainda reconhece o peso das vidas que poderiam ser alteradas. Ele pode estar perto do Elo sem confiar plenamente em quem controla os ciclos."
+          };
+        }
+        if (score > -12) {
+          return {
+            label: "Entre os dois lados",
+            tone: "mixed",
+            title: "Seu personagem vive uma tensão real entre os ideais.",
+            summary: "As respostas não apontam para uma adesão simples. Ele pode valorizar a chance de salvar o futuro e, ao mesmo tempo, sentir que uma vida vivida não pode ser apagada. A experiência que decidirá seu lado ainda pode estar por vir."
+          };
+        }
+        if (score > -30) {
+          return {
+            label: "Leve inclinação aos Fatalistas",
+            tone: "mixed",
+            title: "A vida já vivida pesa um pouco mais.",
+            summary: "Seu personagem parece desconfiar do custo de um novo começo, embora ainda enxergue valor em certas tentativas. Talvez aceite os ciclos apenas quando houver consentimento, controle compartilhado ou uma possibilidade real de reparação."
+          };
+        }
+        if (score > -65) {
+          return {
+            label: "Tendência aos Fatalistas",
+            tone: "fatalist",
+            title: "Seu personagem se inclina a proteger o direito ao fim.",
+            summary: "Ele tende a considerar cada vida e cada consequência moralmente reais, mesmo quando o mundo as esquece. Sua tensão mais fértil está em como resistir a um ciclo imposto sem impor, por sua vez, o fim dos ciclos a todos."
+          };
+        }
+        return {
+          label: "Inclinação forte aos Fatalistas",
+          tone: "fatalist",
+          title: "Seu personagem resiste profundamente à ideia de recomeçar por todos.",
+          summary: "Ele parece ver o ciclo como uma autoridade capaz de transformar vidas inteiras em versões descartáveis. A pergunta que pode aprofundá-lo é se encerrar o mecanismo também seria uma decisão tomada em nome de pessoas que não puderam escolher."
+        };
+      }
+
+      function axisInterpretation(axisKey, value) {
+        if (value === null) return "Sem respostas suficientes nesta dimensão.";
+        const axis = axes[axisKey];
+        if (value > 20) return axis.rightText;
+        if (value < -20) return axis.leftText;
+        return "Seu personagem parece dividido nesta dimensão ou ainda precisa de uma experiência que o faça escolher.";
+      }
+
+      function finishTest() {
+        const resultName = document.getElementById("result-name");
+        if (playerName) {
+          const prefix = document.createElement("span");
+          prefix.textContent = "Leitura de ";
+          const name = document.createElement("strong");
+          name.textContent = playerName;
+          resultName.replaceChildren(prefix, name);
+          resultName.hidden = false;
+        } else {
+          resultName.hidden = true;
+        }
+
+        const answeredIndexes = answers.map(function (value, index) {
+          return value === null ? -1 : index;
+        }).filter(function (index) { return index >= 0; });
+
+        if (answeredIndexes.length === 0) {
+          document.getElementById("verdict").textContent = "Sem respostas";
+          document.getElementById("verdict").className = "verdict mixed";
+          document.getElementById("result-title").textContent = "Ainda não há material para um veredito.";
+          document.getElementById("result-summary").textContent = "Responda pelo menos uma pergunta para gerar uma leitura. Quanto mais dilemas responder, mais completa será a comparação.";
+          document.getElementById("score-label").textContent = "Sem leitura";
+          document.getElementById("balance-marker").style.left = "50%";
+          document.getElementById("balance-marker").className = "balance-marker";
+          document.getElementById("axis-list").replaceChildren();
+          document.getElementById("tension-text").textContent = "Volte ao teste e escolha as respostas que mais combinam com o personagem.";
+          document.getElementById("answered-note").textContent = "Nenhuma resposta foi registrada.";
+          document.getElementById("debate-summary").hidden = true;
+          resultSummaryText = (playerName ? "Personagem: " + playerName + "\n" : "") + "Ainda não há material para um veredito.";
+          showScreen("result");
+          return;
+        }
+
+        const total = answeredIndexes.reduce(function (sum, index) { return sum + answers[index]; }, 0);
+        const score = Math.round((total / (answeredIndexes.length * 2)) * 100);
+        const verdict = getVerdict(score);
+        if (answeredIndexes.length < 8) {
+          const initialDirection = score > 0 ? "ao Elo Eterno" : score < 0 ? "aos Fatalistas" : "entre os dois lados";
+          verdict.label = "Sinal provisório · " + answeredIndexes.length + " respostas";
+          verdict.tone = "mixed";
+          verdict.title = "Há uma inclinação inicial " + initialDirection + ".";
+          verdict.summary = "Com menos da metade das perguntas respondidas, esta leitura ainda pode mudar bastante. Responda mais dilemas para que as dimensões e o veredito representem melhor as convicções do personagem.";
+        }
+        const verdictElement = document.getElementById("verdict");
+        verdictElement.textContent = verdict.label;
+        verdictElement.className = "verdict " + verdict.tone;
+        document.getElementById("result-title").textContent = verdict.title;
+        document.getElementById("result-summary").textContent = verdict.summary;
+        document.getElementById("score-label").textContent = score > 0 ? "+" + score + " · Elo Eterno" : score < 0 ? score + " · Fatalistas" : "0 · Em equilíbrio";
+        const balanceMarker = document.getElementById("balance-marker");
+        balanceMarker.style.left = ((score + 100) / 2) + "%";
+        balanceMarker.className = "balance-marker" + (score < 0 ? " fatalist" : "");
+        document.getElementById("balance-track").setAttribute("aria-label", "Inclinação geral: " + (score > 0 ? "Elo Eterno, " + score : score < 0 ? "Fatalistas, " + Math.abs(score) : "equilíbrio"));
+
+        const axisScores = {};
+        Object.keys(axes).forEach(function (key) {
+          const relevant = answeredIndexes.filter(function (index) { return questions[index].axis === key; });
+          if (!relevant.length) {
+            axisScores[key] = null;
+            return;
+          }
+          const subtotal = relevant.reduce(function (sum, index) { return sum + answers[index]; }, 0);
+          axisScores[key] = Math.round((subtotal / (relevant.length * 2)) * 100);
+        });
+
+        const axisList = document.getElementById("axis-list");
+        axisList.replaceChildren();
+        Object.keys(axes).forEach(function (key) {
+          const axis = axes[key];
+          const axisScore = axisScores[key];
+          const item = document.createElement("div");
+          item.className = "axis-item";
+          const head = document.createElement("div");
+          head.className = "axis-head";
+          const name = document.createElement("span");
+          name.textContent = axis.label;
+          const description = document.createElement("span");
+          description.textContent = axisInterpretation(key, axisScore);
+          head.append(name, description);
+          const track = document.createElement("div");
+          track.className = "axis-track";
+          track.setAttribute("role", "img");
+          track.setAttribute("aria-label", axis.label + ": " + (axisScore === null ? "sem respostas" : axisScore > 0 ? "inclinação Elo Eterno" : axisScore < 0 ? "inclinação Fatalista" : "equilíbrio"));
+          const marker = document.createElement("span");
+          marker.className = "axis-marker" + (axisScore !== null && axisScore < 0 ? " fatalist" : "");
+          marker.style.left = axisScore === null ? "50%" : ((axisScore + 100) / 2) + "%";
+          track.appendChild(marker);
+          const caption = document.createElement("div");
+          caption.className = "axis-caption";
+          const left = document.createElement("span");
+          left.textContent = axis.left;
+          const right = document.createElement("span");
+          right.textContent = axis.right;
+          caption.append(left, right);
+          item.append(head, track, caption);
+          axisList.appendChild(item);
+        });
+
+        const tensions = Object.keys(axisScores).filter(function (key) {
+          return axisScores[key] !== null && Math.abs(axisScores[key]) >= 25 && ((score > 10 && axisScores[key] < -25) || (score < -10 && axisScores[key] > 25));
+        });
+        let tensionText;
+        if (tensions.length) {
+          const key = tensions.sort(function (a, b) { return Math.abs(axisScores[b]) - Math.abs(axisScores[a]); })[0];
+          tensionText = "No conjunto, o personagem se inclina " + (score > 0 ? "ao Elo Eterno" : "aos Fatalistas") + ", mas em “" + axes[key].label + "” suas respostas apontam para o outro lado. Essa diferença pode virar uma condição, uma culpa ou o motivo de um conflito com a própria facção.";
+        } else if (score > 15) {
+          tensionText = "O personagem tende ao Elo. Para aprofundá-lo, decida qual limite ele imporia ao uso dos ciclos — e o que poderia fazê-lo aceitar que uma perda não deve ser corrigida.";
+        } else if (score < -15) {
+          tensionText = "O personagem tende aos Fatalistas. Para aprofundá-lo, decida como ele distingue defender o direito ao fim de decidir esse fim por outras pessoas.";
+        } else {
+          tensionText = "O personagem parece dividido. Escolha uma perda ou uma escolha concreta que o obrigaria a agir antes de ter certeza de qual ideal está certo.";
+        }
+        document.getElementById("tension-text").textContent = tensionText;
+        document.getElementById("answered-note").textContent = "Leitura baseada em " + answeredIndexes.length + " de " + questions.length + " respostas. As dimensões podem apontar para lados diferentes; isso também é material para interpretação.";
+        const debateEntries = debateResponses.filter(function (style, index) { return style !== null && answers[index] !== null; });
+        const debateSummary = document.getElementById("debate-summary");
+        let debateSummaryText = "";
+        if (debateModeEnabled && debateEntries.length) {
+          const counts = { reconsider: 0, condition: 0, defend: 0 };
+          debateEntries.forEach(function (style) { counts[style] += 1; });
+          const highestCount = Math.max(counts.reconsider, counts.condition, counts.defend);
+          const dominant = Object.keys(counts).filter(function (style) { return counts[style] === highestCount; });
+          let profile;
+          if (dominant.length > 1) {
+            profile = "Ele alterna entre diferentes formas de responder; nenhuma postura domina claramente.";
+          } else if (dominant[0] === "reconsider") {
+            profile = "Quando confrontado, tende a reexaminar as próprias premissas antes de sustentar uma posição.";
+          } else if (dominant[0] === "condition") {
+            profile = "Quando confrontado, procura condições, consentimento e limites antes de aceitar qualquer caminho.";
+          } else {
+            profile = "Quando confrontado, tende a defender com firmeza a prioridade que escolheu, mesmo reconhecendo o custo.";
+          }
+          document.getElementById("debate-profile").textContent = profile + " Leitura baseada em " + debateEntries.length + " contrapontos.";
+          const stats = document.getElementById("debate-stats");
+          stats.replaceChildren();
+          Object.keys(debateStyleLabels).forEach(function (style) {
+            const chip = document.createElement("span");
+            chip.className = "debate-stat";
+            const count = document.createElement("strong");
+            count.textContent = String(counts[style]);
+            chip.append(count, document.createTextNode(debateStyleLabels[style]));
+            stats.appendChild(chip);
+          });
+          debateSummary.hidden = false;
+          debateSummaryText = "\nDebate: " + profile + " (" + debateEntries.length + " contrapontos)\n" + Object.keys(debateStyleLabels).map(function (style) { return debateStyleLabels[style] + ": " + counts[style]; }).join(" · ");
+        } else {
+          debateSummary.hidden = true;
+          document.getElementById("debate-stats").replaceChildren();
+        }
+        resultSummaryText = (playerName ? "Personagem: " + playerName + "\n" : "") + verdict.label + "\n" + verdict.title + "\n" + verdict.summary + "\nInclinação geral: " + (score > 0 ? "Elo Eterno +" + score : score < 0 ? "Fatalistas " + score : "equilíbrio") + ".\n" + tensionText + debateSummaryText;
+        showScreen("result");
+      }
+
+      function moveNext() {
+        const fromDebate = !debateStep.hidden;
+        if (currentIndex === questions.length - 1) {
+          finishTest();
+          document.getElementById("result-title").focus();
+          return;
+        }
+        currentIndex += 1;
+        renderQuestion();
+        if (fromDebate) document.getElementById("question-title").focus();
+      }
+
+      function continueFromQuestion() {
+        if (debateModeEnabled && answers[currentIndex] !== null) {
+          renderDebate();
+          return;
+        }
+        moveNext();
+      }
+
+      function skipCurrent() {
+        answers[currentIndex] = null;
+        debateResponses[currentIndex] = null;
+        moveNext();
+      }
+
+      document.getElementById("start-button").addEventListener("click", function () {
+        playerName = playerNameInput.value.trim();
+        debateModeEnabled = debateModeInput.checked;
+        currentIndex = 0;
+        showScreen("quiz");
+        renderQuestion();
+        document.getElementById("question-title").focus();
+      });
+
+      backButton.addEventListener("click", function () {
+        if (currentIndex > 0) {
+          currentIndex -= 1;
+          renderQuestion();
+        }
+      });
+
+      skipButton.addEventListener("click", skipCurrent);
+      nextButton.addEventListener("click", continueFromQuestion);
+      debateBackButton.addEventListener("click", function () {
+        renderQuestion();
+        document.getElementById("question-title").focus();
+      });
+      debateNextButton.addEventListener("click", moveNext);
+
+      document.getElementById("edit-button").addEventListener("click", function () {
+        currentIndex = 0;
+        showScreen("quiz");
+        renderQuestion();
+        document.getElementById("question-title").focus();
+      });
+
+      document.getElementById("restart-button").addEventListener("click", function () {
+        answers.fill(null);
+        debateResponses.fill(null);
+        currentIndex = 0;
+        document.getElementById("copy-status").textContent = "";
+        showScreen("start");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      document.getElementById("copy-button").addEventListener("click", async function () {
+        const status = document.getElementById("copy-status");
+        try {
+          await navigator.clipboard.writeText(resultSummaryText);
+          status.textContent = "Veredito copiado.";
+        } catch (error) {
+          const temporary = document.createElement("textarea");
+          temporary.value = resultSummaryText;
+          temporary.setAttribute("readonly", "");
+          temporary.style.position = "absolute";
+          temporary.style.left = "-9999px";
+          document.body.appendChild(temporary);
+          temporary.select();
+          const copied = document.execCommand("copy");
+          temporary.remove();
+          status.textContent = copied ? "Veredito copiado." : "Não foi possível copiar automaticamente. Selecione o texto do resultado.";
+        }
+      });
+    }());
+  </script>
+</body>
+</html>
