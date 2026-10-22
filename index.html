@@ -64,10 +64,16 @@
     @keyframes soft-glow { 0%, 100% { box-shadow: 0 0 24px rgba(99, 231, 255, .18); } 50% { box-shadow: 0 0 42px rgba(99, 231, 255, .34); } }
     @keyframes light-cyan-drift { 0% { opacity: .55; transform: translate3d(-2%, -2%, 0) scale(.88); } 50% { opacity: .94; transform: translate3d(7%, 5%, 0) scale(1.08); } 100% { opacity: .7; transform: translate3d(1%, 11%, 0) scale(.96); } }
     @keyframes light-red-drift { 0% { opacity: .62; transform: translate3d(2%, 2%, 0) scale(.92); } 50% { opacity: .96; transform: translate3d(-8%, -5%, 0) scale(1.1); } 100% { opacity: .68; transform: translate3d(-1%, 9%, 0) scale(.9); } }
+    @keyframes reduced-glow { 0%, 100% { opacity: .68; } 50% { opacity: .9; } }
+    @keyframes orbital-glint { 0%, 100% { filter: brightness(.86); } 50% { filter: brightness(1.3); } }
+    @keyframes progress-sheen { to { background-position: 200% center; } }
+    @keyframes joystick-nudge { 0%, 100% { transform: rotate(0); } 35% { transform: rotate(-13deg); } 70% { transform: rotate(13deg); } }
 
     button { font: inherit; }
 
     .shell {
+      position: relative;
+      z-index: 1;
       width: min(100% - 36px, 860px);
       margin: 0 auto;
       padding: 30px 0 76px;
@@ -75,37 +81,41 @@
 
     .ambient-light {
       position: fixed;
-      z-index: -1;
+      z-index: 0;
       inset: 0;
       overflow: hidden;
       pointer-events: none;
+      isolation: isolate;
     }
 
     .ambient-light span {
       position: absolute;
       top: 4vh;
-      width: clamp(440px, 62vw, 850px);
+      width: clamp(500px, 70vw, 980px);
       aspect-ratio: 1;
       border-radius: 50%;
-      filter: blur(24px);
+      filter: blur(34px) saturate(1.2);
       mix-blend-mode: screen;
       will-change: transform, opacity;
     }
 
     .ambient-cyan {
       left: -25vw;
-      background: radial-gradient(circle, rgba(30, 204, 236, .3) 0, rgba(17, 117, 145, .19) 28%, rgba(10, 40, 54, .08) 48%, transparent 72%);
-      animation: light-cyan-drift 14s ease-in-out infinite alternate;
+      background: radial-gradient(circle, rgba(30, 204, 236, .42) 0, rgba(17, 117, 145, .26) 28%, rgba(10, 40, 54, .11) 48%, transparent 72%);
+      animation: light-cyan-drift 12s ease-in-out infinite alternate;
     }
 
     .ambient-light .ambient-red {
       top: 19vh;
       right: -24vw;
-      background: radial-gradient(circle, rgba(248, 50, 83, .28) 0, rgba(142, 25, 51, .17) 30%, rgba(54, 12, 28, .08) 49%, transparent 73%);
-      animation: light-red-drift 16s ease-in-out -5s infinite alternate;
+      background: radial-gradient(circle, rgba(248, 50, 83, .38) 0, rgba(142, 25, 51, .24) 30%, rgba(54, 12, 28, .11) 49%, transparent 73%);
+      animation: light-red-drift 15s ease-in-out -5s infinite alternate;
     }
 
     .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       margin: 0 0 10px;
       color: var(--cyan);
       font-size: .76rem;
@@ -113,6 +123,8 @@
       letter-spacing: .16em;
       text-transform: uppercase;
     }
+
+    .eyebrow-icon { width: 16px; height: 16px; opacity: .8; filter: drop-shadow(0 0 6px rgba(99, 231, 255, .6)); }
 
     h1, h2, h3, p { margin-top: 0; }
 
@@ -163,6 +175,7 @@
       margin: 0 0 28px 1px;
       border-radius: 50%;
       animation: ring-breathe 5s ease-in-out infinite;
+      will-change: transform, opacity;
     }
 
     .fracture-mark::before {
@@ -187,10 +200,11 @@
     .fracture-orbit {
       position: absolute;
       z-index: 1;
-      inset: 5px;
+      inset: 26% 0;
       border: 1px solid rgba(99, 231, 255, .2);
       border-radius: 50%;
       animation: orbit-spin 9s linear infinite;
+      will-change: transform;
     }
 
     .fracture-orbit::before {
@@ -207,7 +221,7 @@
     }
 
     .fracture-orbit.orbit-red {
-      inset: 15px;
+      inset: 32% 10%;
       border-color: rgba(255, 83, 103, .23);
       animation-duration: 7s;
       animation-direction: reverse;
@@ -220,6 +234,7 @@
       height: 9px;
       background: var(--red-bright);
       box-shadow: 0 0 10px 3px rgba(255, 83, 103, .7), 0 0 26px rgba(255, 83, 103, .44);
+      animation: orbital-glint 2.8s ease-in-out infinite;
     }
 
     .fracture-core {
@@ -352,11 +367,12 @@
       font-size: .84rem;
     }
 
-    .meta-row span::before {
-      content: "•";
-      margin-right: 8px;
-      color: var(--cyan);
-    }
+    .meta-item { display: inline-flex; align-items: center; gap: 8px; }
+    .meta-item img { width: 17px; height: 17px; object-fit: contain; opacity: .82; filter: drop-shadow(0 0 5px rgba(99, 231, 255, .4)); }
+    .button-content { display: inline-flex; position: relative; z-index: 1; align-items: center; justify-content: center; gap: 9px; }
+    .button-icon { width: 19px; height: 19px; object-fit: contain; filter: brightness(0) saturate(100%) invert(7%) sepia(19%) saturate(1822%) hue-rotate(154deg) brightness(95%); }
+    .asset-credit { margin: 22px 0 0; color: #71828b; font-size: .72rem; }
+    .asset-credit a { color: #9ab3bd; text-underline-offset: 3px; }
 
     .privacy-note {
       margin: 15px 0 0;
@@ -379,6 +395,7 @@
 
     .button:hover { filter: brightness(1.08); transform: translateY(-2px); box-shadow: 0 0 34px rgba(99, 231, 255, .32); }
     .button:active { transform: translateY(0); }
+    .button:hover .button-icon { animation: joystick-nudge .42s ease; }
 
     .button.secondary {
       border-color: #293540;
@@ -427,7 +444,8 @@
       font-size: .82rem;
     }
 
-    .step-count { color: var(--text); font-variant-numeric: tabular-nums; }
+    .step-count { display: inline-flex; align-items: center; gap: 8px; color: var(--text); font-variant-numeric: tabular-nums; }
+    .step-count::before { width: 15px; height: 15px; background: var(--cyan); content: ""; -webkit-mask: url("assets/game-icons/gamepad.png") center / contain no-repeat; mask: url("assets/game-icons/gamepad.png") center / contain no-repeat; filter: drop-shadow(0 0 5px rgba(99, 231, 255, .5)); }
 
     .progress-track {
       height: 5px;
@@ -441,7 +459,9 @@
       width: 0;
       height: 100%;
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--red), #9b7d96 50%, var(--cyan));
+      background: linear-gradient(90deg, var(--red), #9b7d96 35%, var(--cyan) 70%, #d8fbff);
+      background-size: 200% 100%;
+      animation: progress-sheen 3.2s linear infinite;
       transition: width .45s cubic-bezier(.22,.75,.24,1);
       box-shadow: 0 0 16px rgba(99, 231, 255, .24);
     }
@@ -465,7 +485,7 @@
 
     .answer {
       display: grid;
-      grid-template-columns: 24px 1fr;
+      grid-template-columns: 32px 1fr;
       align-items: start;
       gap: 12px;
       width: 100%;
@@ -506,24 +526,37 @@
 
     .answer-mark {
       display: inline-grid;
-      width: 21px;
-      height: 21px;
+      width: 30px;
+      height: 30px;
       place-items: center;
-      border: 1px solid #53636e;
-      border-radius: 50%;
+      border: 1px solid rgba(147, 164, 174, .22);
+      border-radius: 9px;
+      background: rgba(146, 168, 180, .07);
       color: #93a4ae;
-      font-size: .67rem;
-      line-height: 1;
+      transition: border-color .2s ease, background .2s ease, transform .2s ease;
     }
+
+    .answer-icon { display: block; width: 17px; height: 17px; background: currentColor; -webkit-mask-image: var(--answer-icon); mask-image: var(--answer-icon); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; }
+    .answer[data-pole="eternal"] .answer-mark { color: var(--cyan); }
+    .answer[data-pole="fatalist"] .answer-mark { color: var(--red-bright); }
+    .answer[data-pole="neutral"] .answer-mark { color: #c2cbd0; }
 
     .answer[aria-pressed="true"][data-pole="eternal"] .answer-mark {
       border-color: var(--cyan);
-      color: var(--cyan);
+      background: rgba(99, 231, 255, .12);
+      transform: rotate(-4deg) scale(1.06);
     }
 
     .answer[aria-pressed="true"][data-pole="fatalist"] .answer-mark {
       border-color: var(--red);
-      color: var(--red);
+      background: rgba(255, 83, 103, .12);
+      transform: rotate(4deg) scale(1.06);
+    }
+
+    .answer[aria-pressed="true"][data-pole="neutral"] .answer-mark {
+      border-color: #aebbc2;
+      background: rgba(153, 169, 179, .12);
+      transform: scale(1.06);
     }
 
     .quiz-actions {
@@ -939,7 +972,11 @@
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
-      .ambient-light span, .fracture-mark, .fracture-orbit, .hero, .panel, .result-panel:not([hidden]), .debate-step, .question-arrive, .ideology-grid { animation: none !important; }
+      .ambient-light span { animation: reduced-glow 18s ease-in-out infinite !important; transform: none !important; }
+      .fracture-mark { animation: orbital-glint 8s ease-in-out infinite !important; transform: none !important; }
+      .fracture-orbit { animation: orbit-spin 30s linear infinite !important; }
+      .progress-fill, .button:hover .button-icon { animation: none !important; }
+      .hero, .panel, .result-panel:not([hidden]), .debate-step, .question-arrive, .ideology-grid { animation: none !important; }
     }
   </style>
 </head>
@@ -967,8 +1004,11 @@
           <span class="mode-toggle-copy"><strong>Ativar modo debate</strong><span>Depois de cada escolha, responda a um argumento contrário. No resultado, veja como ele lida com críticas.</span></span>
         </label>
       </div>
-      <div class="meta-row"><span>16 dilemas</span><span>Sem resposta certa</span></div>
-      <button class="button" id="start-button" type="button">Começar o teste</button>
+      <div class="meta-row">
+        <span class="meta-item"><img src="assets/game-icons/gamepad.png" alt="">16 dilemas</span>
+        <span class="meta-item"><img src="assets/game-icons/star.png" alt="">Sem resposta certa</span>
+      </div>
+      <button class="button" id="start-button" type="button"><span class="button-content"><img class="button-icon" src="assets/game-icons/joystick.png" alt="">Iniciar jornada</span></button>
     </section>
 
     <section id="quiz-screen" class="panel quiz-panel" hidden aria-label="Perguntas e modo debate">
@@ -1010,7 +1050,7 @@
     </section>
 
     <section id="result-screen" class="panel result-panel" hidden aria-live="polite">
-      <p class="eyebrow">Leitura aproximada</p>
+      <p class="eyebrow"><img class="eyebrow-icon" src="assets/game-icons/star.png" alt=""> Leitura aproximada</p>
       <p class="result-name" id="result-name" hidden></p>
       <div id="verdict" class="verdict"></div>
       <h2 id="result-title" tabindex="-1"></h2>
@@ -1071,6 +1111,7 @@
       </div>
       <p class="toast" id="copy-status" aria-live="polite"></p>
     </section>
+    <p class="asset-credit">Ícones de jogo por <a href="https://kenney.nl/assets/game-icons" target="_blank" rel="noreferrer">Kenney</a>, disponibilizados sob CC0.</p>
   </main>
 
   <script>
@@ -1607,14 +1648,16 @@
         nextButton.disabled = selectedValue === null;
         answerList.replaceChildren();
 
-        question.answers.forEach(function (answer, answerIndex) {
+        question.answers.forEach(function (answer) {
           const button = document.createElement("button");
           button.type = "button";
           button.className = "answer";
           button.setAttribute("data-value", String(answer.value));
           button.setAttribute("data-pole", answer.value > 0 ? "eternal" : answer.value < 0 ? "fatalist" : "neutral");
           button.setAttribute("aria-pressed", String(selectedValue === answer.value));
-          button.innerHTML = '<span class="answer-mark" aria-hidden="true">' + String.fromCharCode(65 + answerIndex) + '</span><span></span>';
+          const answerIcon = answer.value >= 2 ? "forward" : answer.value === 1 ? "save" : answer.value === 0 ? "question" : answer.value === -1 ? "previous" : "rewind";
+          button.style.setProperty("--answer-icon", 'url("assets/game-icons/' + answerIcon + '.png")');
+          button.innerHTML = '<span class="answer-mark" aria-hidden="true"><span class="answer-icon"></span></span><span></span>';
           button.lastElementChild.textContent = answer.text;
           button.addEventListener("click", function () {
             if (answers[currentIndex] !== answer.value) debateResponses[currentIndex] = null;
@@ -1665,14 +1708,16 @@
           { style: "condition", text: debateCase.replies.condition },
           { style: "defend", text: debateCase.replies.defend[side] }
         ];
-        rebuttals.forEach(function (rebuttal, rebuttalIndex) {
+        const rebuttalIcons = { reconsider: "rewind", condition: "gear", defend: "target" };
+        rebuttals.forEach(function (rebuttal) {
           const button = document.createElement("button");
           button.type = "button";
           button.className = "answer debate-answer";
           button.setAttribute("data-style", rebuttal.style);
           button.setAttribute("data-pole", side === "neutral" ? "neutral" : side);
           button.setAttribute("aria-pressed", String(debateResponses[currentIndex] === rebuttal.style));
-          button.innerHTML = '<span class="answer-mark" aria-hidden="true">' + String.fromCharCode(65 + rebuttalIndex) + '</span><span class="rebuttal-copy"><strong></strong><span></span></span>';
+          button.style.setProperty("--answer-icon", 'url("assets/game-icons/' + rebuttalIcons[rebuttal.style] + '.png")');
+          button.innerHTML = '<span class="answer-mark" aria-hidden="true"><span class="answer-icon"></span></span><span class="rebuttal-copy"><strong></strong><span></span></span>';
           button.querySelector("strong").textContent = debateChoiceLabels[rebuttal.style];
           button.querySelector(".rebuttal-copy span").textContent = rebuttal.text;
           button.addEventListener("click", function () {
