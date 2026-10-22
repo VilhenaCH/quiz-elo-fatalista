@@ -1108,47 +1108,6 @@
         }
       };
 
-      const counterpoints = {
-        cycle: {
-          eternal: "Você está chamando de segunda chance algo que pode apagar uma vida inteira. Quem deu ao seu personagem o direito de decidir que essa vida pode ser refeita?",
-          fatalist: "Se uma nova tentativa pode impedir a tragédia, recusar qualquer recomeço também escolhe um desfecho. Por que aceitar a perda seria mais justo?",
-          neutral: "Adiar a decisão mantém o mecanismo ativo — isso também pode favorecer um dos lados. O que seu personagem arrisca ao esperar?"
-        },
-        identity: {
-          eternal: "Se cada ciclo muda vínculos, memórias ou escolhas, talvez você esteja defendendo a continuidade de alguém que já não é a mesma pessoa.",
-          fatalist: "Se alguém mantém memória, vontade ou laços através dos ciclos, chamar cada recomeço de apagamento pode ignorar a continuidade que essa pessoa sente.",
-          neutral: "Se não sabe o que permanece, por que presumir que o ciclo apaga tudo — ou que preserva alguém?"
-        },
-        autonomy: {
-          eternal: "Preservar uma possibilidade para todos também pode impor um reinício a quem nunca consentiu.",
-          fatalist: "Exigir que todos concordem antes de agir pode deixar alguém sem a chance de escolher uma nova vida.",
-          neutral: "Não escolher também pode deixar alguém decidir no lugar do personagem. Quem você está deixando agir?"
-        },
-        limits: {
-          eternal: "Aceitar o sacrifício de alguém em nome de um futuro melhor transforma essa pessoa num meio. Qual limite seu personagem não atravessaria?",
-          fatalist: "Recusar o custo de uma tentativa também tem consequências: quantas perdas evitáveis ele aceitaria para não correr o risco de recomeçar?",
-          neutral: "Toda escolha tem custo; esperar por certeza pode deixar a tragédia acontecer. Como ele decide quanto é prova suficiente?"
-        }
-      };
-
-      const rebuttals = {
-        eternal: [
-          { style: "reconsider", text: "Essa objeção tem peso. Preciso saber se existe uma forma de tentar que preserve a história e a escolha de quem será afetado." },
-          { style: "condition", text: "Mantenho a chance de recomeçar, mas exijo transparência, limites e escuta de quem pagará o preço." },
-          { style: "defend", text: "A crítica não elimina a possibilidade de impedir a tragédia. Desistir também escolhe um desfecho." }
-        ],
-        fatalist: [
-          { style: "reconsider", text: "Talvez eu esteja tratando todo recomeço como apagamento. Preciso entender o que realmente continua antes de decidir." },
-          { style: "condition", text: "Posso considerar uma tentativa se houver consentimento e reconhecimento do que já foi vivido." },
-          { style: "defend", text: "Salvar alguém não torna as outras vidas descartáveis. A esperança não dá a ninguém o direito de decidir por todos." }
-        ],
-        neutral: [
-          { style: "reconsider", text: "Essa crítica muda minha prioridade. Preciso descobrir qual dessas perdas seria irreversível." },
-          { style: "condition", text: "Só aceito agir com informação, participação de quem será afetado e um limite claro." },
-          { style: "defend", text: "A dúvida não remove a responsabilidade. Não agir também muda o destino de alguém." }
-        ]
-      };
-
       const debateStyleLabels = {
         reconsider: "Reconsiderou",
         condition: "Colocou condições",
@@ -1340,6 +1299,265 @@
         }
       ];
 
+      const debateCases = [
+        {
+          challenge: {
+            eternal: "Impedir a catástrofe não responde à pergunta mais difícil: você está propondo refazer a vida de todos, inclusive de quem escolheria permanecer nela. Quem pode chamar esse custo coletivo de necessário?",
+            fatalist: "Recusar o reinício também escolhe um desfecho: a catástrofe acontece, e quem poderia sobreviver perde essa possibilidade. Por que preservar a realidade atual pesa mais do que tentar salvá-los?",
+            neutral: "Enquanto você investiga quem seria afetado, a catástrofe continua se aproximando. Que informação ainda dá tempo de conseguir, e quem paga se a espera consumir a última chance?"
+          },
+          replies: {
+            reconsider: "Eu descobriria primeiro se existe uma forma de deter a catástrofe sem reiniciar tudo; a urgência não torna as duas opções equivalentes.",
+            condition: "Só aceitaria o reinício se soubesse quem seria apagado ou alterado e se não houvesse uma saída menos abrangente.",
+            defend: {
+              eternal: "Mesmo com esse custo, eu não fecharia uma chance real de impedir a catástrofe antes de procurar como reduzir o dano.",
+              fatalist: "Salvar vidas possíveis não autoriza apagar a realidade inteira; primeiro eu enfrentaria a tragédia sem tratar todos como parte do mecanismo.",
+              neutral: "Eu não chamaria a hesitação de neutralidade: fixaria um prazo para obter respostas e, depois, assumiria uma decisão." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Uma lembrança solitária pode indicar como evitar a tragédia, mas não prova que todos aceitariam outra tentativa. Sua memória dá conhecimento ao personagem; dá também autoridade sobre os demais?",
+            fatalist: "Reconhecer a vida anterior importa, mas se apegar à prova do que se perdeu pode deixar as pessoas vivas diante da mesma tragédia. O que essa memória fará por elas agora?",
+            neutral: "Registrar o passado preserva a evidência, mas não altera o perigo que se aproxima. Quanto tempo o personagem pode observar antes que a lembrança vire apenas testemunho de outra perda?"
+          },
+          replies: {
+            reconsider: "Eu separaria o que a memória comprova do que ela apenas sugere e dividiria esse relato com quem corre o risco de reviver a tragédia.",
+            condition: "Usaria essa lembrança para orientar uma tentativa somente depois de explicar seus limites e ouvir quem será afetado por ela.",
+            defend: {
+              eternal: "A lembrança não decide por todos, mas é informação que pode salvar quem ainda está aqui; eu não a esconderia por medo de seu peso.",
+              fatalist: "A tragédia passada não vira autorização para repetir o ciclo. Eu usaria o que lembro para proteger esta vida, sem declarar a anterior descartável.",
+              neutral: "Eu manteria o registro, mas não deixaria a investigação sem prazo: memória que não orienta nenhuma ação também tem um custo." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Outra tentativa pode repetir exatamente o sofrimento e ainda consumir o que resta desta realidade. Se não há sinal de que o próximo resultado será melhor, o que justifica continuar apostando vidas?",
+            fatalist: "A falta de garantia não torna todas as chances inúteis. Se o personagem pode aprender com a tentativa anterior, desistir agora também pode condenar pessoas por receio de falhar de novo.",
+            neutral: "Pesar os dois riscos sem um critério pode virar uma decisão tomada tarde demais. Que evidência faria o personagem parar de calcular e escolher?"
+          },
+          replies: {
+            reconsider: "Eu verificaria se a tentativa seguinte pode incorporar o que deu errado; repetir sem aprendizado seria apenas prolongar a aposta.",
+            condition: "Eu só tentaria de novo com um objetivo concreto, uma chance minimamente plausível de mudança e um limite para interromper o ciclo.",
+            defend: {
+              eternal: "A incerteza não prova que tentar é inútil; enquanto houver algo a aprender e vidas que possam ser salvas, eu manteria essa porta aberta.",
+              fatalist: "Uma possibilidade sem garantia não é uma promessa. Eu aceitaria o resultado presente antes de transformar vidas em novas tentativas.",
+              neutral: "Eu definiria de antemão o que conta como chance real e qual perda encerra a aposta, em vez de deixar o cálculo se arrastar." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Manter o ciclo para não perder uma chance futura pode transformar cada despedida em algo provisório. Em que momento a esperança de corrigir uma perda impede alguém de viver o que ainda tem?",
+            fatalist: "Aceitar que algumas perdas são definitivas pode soar digno, mas também fecha a única oportunidade de salvar quem ainda poderia ser alcançado. Por que o fim precisa ser tratado como mais justo?",
+            neutral: "Chamar o fim de perda e libertação reconhece a tensão, mas não responde a quem precisa decidir. O que mudaria o peso de um lado ou do outro?"
+          },
+          replies: {
+            reconsider: "Eu perguntaria a quem está vivendo este ciclo se outra chance ainda é esperança para ela ou se já virou uma obrigação de continuar.",
+            condition: "Eu preservaria o ciclo por um período e com limites claros, sem transformar a possibilidade de recomeçar num dever para todos.",
+            defend: {
+              eternal: "Uma nova chance não precisa apagar o valor do presente; eu tentaria manter o futuro possível sem exigir que todos esperem por ele.",
+              fatalist: "Nem toda perda pode ser reparada, e fingir o contrário pode aprisionar os vivos. Eu defenderia que o ciclo também possa terminar.",
+              neutral: "Eu escolheria com base em quem ainda pode ser salvo e em quem está pedindo para parar; nenhuma das duas coisas deve ser presumida." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Tratar o rosto conhecido como continuidade pode transformar a pessoa nova numa tentativa de recuperar a antiga. Ela não deve afeto, memória ou papel algum ao personagem.",
+            fatalist: "Começar do zero protege a autonomia dela, mas talvez ignore uma continuidade que ela própria poderia querer descobrir. Por que decidir que o vínculo anterior não pode significar nada?",
+            neutral: "Conviver antes de nomear a relação parece cuidadoso, mas o personagem ainda pode agir como se a pessoa devesse corresponder ao passado. Como ele mostrará que não espera isso?"
+          },
+          replies: {
+            reconsider: "Eu perguntaria quem ela é agora e deixaria que ela definisse se quer conhecer a história do vínculo anterior.",
+            condition: "Eu aceitaria reconstruir a relação apenas se ela pudesse recusar o passado sem perder meu cuidado ou respeito.",
+            defend: {
+              eternal: "A semelhança me dá esperança de reencontro, não direito sobre ela; eu tentaria conhecê-la de novo sem cobrar que me reconheça.",
+              fatalist: "Ela não é uma substituta nem uma continuação automática. Eu respeitaria a pessoa presente antes de projetar nela quem perdi.",
+              neutral: "Eu manteria a dúvida comigo, não sobre os ombros dela: a relação começa pelo que ambos escolhem agora." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Guardar a vida esquecida dentro de si preserva uma parte dela, mas pode fazer do personagem o único dono de sua interpretação. Como ele sabe que a memória não está substituindo as vozes que se foram?",
+            fatalist: "Uma vida não precisa de testemunhas para ter acontecido, mas se ninguém mais pode confirmá-la, como impedir que a memória se torne uma certeza impossível de questionar?",
+            neutral: "A experiência pode ser real para o personagem e incerta para os outros. O que ele fará quando sua prova mais importante for justamente algo que ninguém consegue verificar?"
+          },
+          replies: {
+            reconsider: "Eu preservaria a memória sem tratá-la como relato completo: anotaria o que vivi e distinguiria lembrança, interpretação e lacuna.",
+            condition: "Eu pediria que acreditassem na importância daquela vida, sem exigir que aceitem cada lembrança como prova incontestável.",
+            defend: {
+              eternal: "Minha memória não substitui quem se foi, mas pode impedir que os mesmos erros se repitam; eu a usaria com humildade, não como sentença.",
+              fatalist: "O esquecimento alheio não desfaz o que foi vivido. Eu continuaria a honrar esses vínculos mesmo sem conseguir prová-los a todos.",
+              neutral: "Eu compartilharia o que sei e aceitaria que algumas partes permaneçam sem confirmação, sem apagar nem impor a história." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Ajudar essa outra versão a evitar suas perdas pode parecer cuidado, mas também pode impor a ela uma vida guiada pelo trauma de outra pessoa. Ela quer receber esse aviso?",
+            fatalist: "Dizer que cada história pertence a uma pessoa própria pode virar desculpa para ignorar um sofrimento que o personagem já sabe que é evitável. O que ele fará com esse conhecimento?",
+            neutral: "Enxergar a versão como outro eu e como estranha ao mesmo tempo é honesto, mas não diz se deve intervir. Que risco é maior: projetar nela o passado ou deixá-la sem aviso?"
+          },
+          replies: {
+            reconsider: "Eu começaria perguntando o que essa versão deseja saber, em vez de despejar sobre ela perdas que ainda não viveu.",
+            condition: "Eu ofereceria o aviso como possibilidade, sem exigir que ela siga minhas escolhas ou carregue minhas lembranças.",
+            defend: {
+              eternal: "Conhecer um perigo evitável cria responsabilidade; eu tentaria ajudá-la, mas deixaria que a decisão final continuasse sendo dela.",
+              fatalist: "Semelhança não me dá posse sobre a vida dela. Eu não chamaria de salvação uma intervenção que rouba suas próprias escolhas.",
+              neutral: "Eu revelaria apenas o necessário para que ela possa escolher se quer ouvir mais, reduzindo tanto a projeção quanto o silêncio." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "O medo de nunca mais poder voltar pode fazer o personagem aceitar ciclos sem perguntar o que eles levam. Quantas vidas presentes ele colocaria em risco para não perder uma possibilidade?",
+            fatalist: "Temer que uma vida vire descartável não responde ao medo de que ninguém possa corrigir uma tragédia evitável. O que o personagem diria a quem ainda espera ser salvo?",
+            neutral: "A dúvida sobre o que o ciclo preserva é real, mas o medo não suspende o perigo. Qual sinal ajudaria o personagem a distinguir cautela de paralisia?"
+          },
+          replies: {
+            reconsider: "Eu descobriria qual perda o personagem teme de verdade — a chance futura, os vínculos esquecidos ou a própria identidade — antes de agir por medo.",
+            condition: "Eu não aceitaria um recomeço até saber o que pode ser preservado e qual dano deixaria de ser reversível.",
+            defend: {
+              eternal: "Não poder voltar também é uma perda concreta; eu protegeria a chance, mas exigiria que o custo de cada tentativa fosse encarado.",
+              fatalist: "Uma vida não pode ser tratada como rascunho só porque existe outra chance. Eu aceitaria o risco de um fim real para proteger o que já aconteceu.",
+              neutral: "Eu procuraria um critério verificável para decidir; medo sozinho não deve comandar nem a repetição nem o encerramento." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Agir antes de explicar pode salvar essas pessoas, mas também decide por elas que uma vida nova vale o preço. Se sobreviverem sem saber o que foi feito, como poderão consentir depois?",
+            fatalist: "Esperar consentimento de quem nem sabe que existe um ciclo pode deixar a tragédia acontecer diante de todos. O personagem está protegendo a escolha deles ou abandonando-os à falta de informação?",
+            neutral: "Revelar a verdade e evitar uma decisão precipitada pode levar tempo que a catástrofe não concede. Qual é o menor passo reversível que ainda pode protegê-los?"
+          },
+          replies: {
+            reconsider: "Eu tentaria uma ação imediata que preserve vidas sem acionar o reinício, enquanto explico o mecanismo a quem será afetado.",
+            condition: "Eu agiria sem consentimento apenas para impedir um dano iminente e irreversível, e buscaria a autorização deles antes de qualquer novo ciclo.",
+            defend: {
+              eternal: "Se o perigo é iminente, salvar primeiro pode ser a única forma de lhes devolver a possibilidade de escolher depois; eu explicaria o custo assim que pudesse.",
+              fatalist: "A urgência não transforma silêncio em consentimento. Eu buscaria um meio de deter a tragédia sem decidir pela vida inteira de quem não sabe.",
+              neutral: "Eu estabeleceria um limite de tempo para revelar e ouvir; se não houver resposta, escolheria a medida menos irreversível disponível." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Confiar o mecanismo a uma pessoa que promete preservar novas chances concentra justamente o poder de decidir quando todos recomeçam. Quem fiscaliza uma promessa que só ela pode executar?",
+            fatalist: "Retirar o mecanismo de uma pessoa não elimina o poder nem garante que ninguém o use. Se uma chance pode salvar vidas, como impedir que a proibição também vire abuso?",
+            neutral: "Suspender o uso até todos entenderem pode ser prudente, mas o mecanismo permanece nas mãos de alguém. Quem o protege durante essa pausa, e por quanto tempo?"
+          },
+          replies: {
+            reconsider: "Eu verificaria se o mecanismo pode ser dividido, limitado ou desligado; confiar ou confiscar não são as únicas formas de governá-lo.",
+            condition: "Eu só aceitaria manter o mecanismo com regras públicas, fiscalização independente e um modo real de impedir uso unilateral.",
+            defend: {
+              eternal: "O risco de abuso é real, mas destruir ou interditar o mecanismo também pode tirar de todos uma chance de sobrevivência; eu defenderia controle responsável.",
+              fatalist: "Nenhuma pessoa deveria ter poder absoluto para reiniciar a vida coletiva. Eu priorizaria retirar essa autoridade, mesmo que isso feche uma possibilidade.",
+              neutral: "A pausa precisa ter prazo e responsáveis: eu suspenderia o uso enquanto se decide quem pode fiscalizar e quais usos são legítimos." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "A maioria pode querer manter a chance, mas a minoria que teme os ciclos não está escolhendo participar. Preservar a possibilidade para todos pode ser exatamente o que os obriga a recomeçar.",
+            fatalist: "Dar veto a toda pessoa afetada pode fazer a recusa de alguns fechar uma saída para quem quer tentar. Como a minoria que deseja recomeçar terá voz?",
+            neutral: "Uma alternativa que não obrigue ninguém parece justa, mas talvez não exista antes da decisão coletiva. Quem fica exposto enquanto a busca por consenso continua?"
+          },
+          replies: {
+            reconsider: "Eu perguntaria à minoria o que ela teme perder e à maioria o que espera salvar; o número de votos não descreve o custo de cada grupo.",
+            condition: "Eu aceitaria a decisão majoritária apenas se ninguém fosse forçado a participar e se a minoria pudesse proteger seus vínculos e sua recusa.",
+            defend: {
+              eternal: "A maioria não deve apagar a minoria, mas a recusa de alguns também não precisa destruir a chance dos demais; eu buscaria uma escolha que permita saídas reais.",
+              fatalist: "Se a consequência alcança todos, a maioria não pode votar para tornar a vida de uma minoria revogável. Eu defenderia o direito de não recomeçar.",
+              neutral: "Eu não aceitaria chamar qualquer resultado de consenso; procuraria primeiro separar quem quer tentar de quem precisa ser protegido da tentativa." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Refazer uma escolha pode ser liberdade para quem decide, mas o reinício também desfaz escolhas e relações de pessoas que nunca pediram uma segunda chance. De quem é essa liberdade?",
+            fatalist: "Aceitar consequências reais pode valorizar a autonomia, mas também pode prender alguém a um erro ou tragédia que poderia ser corrigido. Por que a irreversibilidade seria mais livre?",
+            neutral: "Escolher entre voltar e aceitar o passado exige que o personagem saiba quem tem poder sobre a decisão. Sem isso, o dilema pode estar formulado para ele por outra pessoa."
+          },
+          replies: {
+            reconsider: "Eu distinguiria a liberdade de corrigir a própria escolha da autoridade para reescrever as escolhas de todos os outros.",
+            condition: "Eu só defenderia uma nova escolha quando as pessoas afetadas também pudessem compreender o custo e recusar a participação.",
+            defend: {
+              eternal: "Uma escolha trágica não deveria ser prisão eterna se há como corrigi-la; eu protegeria a chance, buscando limitar o efeito sobre quem não consentiu.",
+              fatalist: "Liberdade inclui aceitar as consequências sem que alguém as apague por nós. Eu não chamaria de escolha um recomeço imposto do lado de fora.",
+              neutral: "Eu perguntaria primeiro quem escolhe e quem paga; só então decidiria se voltar ou permanecer realmente expressa liberdade." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Uma conta de muitas vidas salvas ainda pode esconder uma pessoa que nunca aceitou virar custo. Se o personagem aceita esse cálculo, quem garante que ele não escolherá sempre o mesmo indivíduo para sacrificar?",
+            fatalist: "Recusar que um indivíduo pague pode condenar muitas outras pessoas a uma tragédia que o reinício evitaria. O personagem está protegendo essa pessoa ou usando o princípio para não escolher?",
+            neutral: "Conhecer cada pessoa e cada risco pode ser impossível antes da decisão. Qual princípio orienta o personagem quando não dá para transformar vidas numa conta completa?"
+          },
+          replies: {
+            reconsider: "Eu buscaria outra rota e perguntaria à pessoa envolvida antes de chamar o sacrifício dela de necessário.",
+            condition: "Eu só aceitaria esse custo se a pessoa pudesse escolher livremente, conhecesse as consequências e não houvesse alternativa menos danosa.",
+            defend: {
+              eternal: "Se o custo é voluntário e a chance de salvar muitas vidas é concreta, eu não descartaria essa escolha; ainda assim, procuraria outra saída primeiro.",
+              fatalist: "Ninguém deve ser convertido em ferramenta por uma conta feita por terceiros. Eu recusaria o plano mesmo que a recusa tornasse a decisão mais dolorosa.",
+              neutral: "Eu usaria como limite a dignidade e a vontade da pessoa em risco, em vez de fingir que uma soma resolve o dilema." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Continuar enquanto houver qualquer possibilidade pode transformar o personagem em recurso infinito e fazer os outros dependerem de seu desgaste. Quem decide que o limite dele ainda não chegou?",
+            fatalist: "O sofrimento acumulado importa, mas parar pode deixar pessoas vivas sem ajuda quando o personagem ainda tem como agir. Como evitar que o limite pessoal vire abandono?",
+            neutral: "Pedir que aliados decidam junto reduz o isolamento, mas eles podem amar o personagem ou depender dele. Como distinguir apoio de pressão para continuar?"
+          },
+          replies: {
+            reconsider: "Eu perguntaria às pessoas que ele tenta proteger se continuar realmente ajuda ou se já está apenas repetindo um custo sem resultado.",
+            condition: "Eu aceitaria seguir apenas até um limite combinado com aliados e com sinais claros de que novas tentativas ainda produzem mudança.",
+            defend: {
+              eternal: "Se as pessoas ainda podem ser salvas, eu continuaria por enquanto; mas meu sacrifício não pode ser tratado como uma obrigação sem fim.",
+              fatalist: "Minha vida também é uma vida, não combustível do mecanismo. Eu poderia parar mesmo sabendo que outros desejariam que eu continuasse.",
+              neutral: "Eu pediria que aliados explicassem o que está em jogo e também tivessem permissão para me dizer que parar é legítimo." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "O luto da pessoa querida é real, mas a esperança de recuperar alguém pode levar todos a pagar por uma promessa que talvez não possa ser cumprida. A quem cabe autorizar esse risco?",
+            fatalist: "Recusar a tentativa pode soar como impor ao enlutado que aceite uma perda que talvez ainda pudesse ser revertida. O personagem está protegendo os outros ou decidindo o que essa pessoa pode esperar?",
+            neutral: "Entender o luto e os riscos não alivia a urgência de quem está pedindo ajuda. O que o personagem pode fazer por essa pessoa sem prometer uma recuperação impossível?"
+          },
+          replies: {
+            reconsider: "Eu perguntaria o que a pessoa espera recuperar e explicaria com honestidade o que o ciclo pode ou não devolver.",
+            condition: "Eu a acompanharia na busca, mas só provocaria outro ciclo com informação clara, consentimento dos demais e chance concreta de reencontro.",
+            defend: {
+              eternal: "Eu não deixaria o luto encerrar uma chance antes de entendermos o mecanismo; tentaria com cuidado e sem prometer que a pessoa voltará igual.",
+              fatalist: "A dor não dá direito de transformar outra realidade num instrumento de recuperação. Eu ficaria ao lado dela sem acionar o ciclo.",
+              neutral: "Eu ofereceria presença e investigação, mas definiria junto com ela o ponto em que a busca vira um risco imposto aos demais." 
+            }
+          }
+        },
+        {
+          challenge: {
+            eternal: "Provar que uma tragédia pode ser evitada sem apagar vidas seria uma evidência poderosa, mas uma demonstração segura talvez exija justamente expor alguém ao ciclo. Quem aceita ser o teste?",
+            fatalist: "Provar que o ciclo apaga vínculos pode confirmar o dano, mas se ainda houver pessoas em perigo, esperar certeza absoluta também pode custar vidas. Que grau de prova basta para agir?",
+            neutral: "Saber o que continua existindo parece decisivo, mas talvez nenhuma explicação venha antes do próximo uso. Como o personagem age quando a resposta só pode vir depois do risco?"
+          },
+          replies: {
+            reconsider: "Eu buscaria evidências sem provocar outro ciclo e separaria uma prova observada de uma promessa feita por quem controla o mecanismo.",
+            condition: "Eu aceitaria testar uma hipótese apenas com voluntários informados, salvaguardas independentes e uma forma de interromper o experimento.",
+            defend: {
+              eternal: "Se houver prova de que vidas podem ser preservadas, eu defenderia a tentativa; não exigiria certeza impossível antes de salvar alguém.",
+              fatalist: "Uma hipótese sobre o que sobrevive não justifica arriscar pessoas sem consentimento. Eu exigiria evidência antes de permitir outro ciclo.",
+              neutral: "Eu escolheria a menor ação que produza informação sem comprometer vidas, e aceitaria que talvez reste incerteza." 
+            }
+          }
+        }
+      ];
+
       const startScreen = document.getElementById("start-screen");
       const quizScreen = document.getElementById("quiz-screen");
       const resultScreen = document.getElementById("result-screen");
@@ -1423,14 +1641,15 @@
 
       function renderDebate() {
         const question = questions[currentIndex];
+        const debateCase = debateCases[currentIndex];
         const side = selectedSide();
         const challengeSide = side === "eternal" ? "fatalist" : side === "fatalist" ? "eternal" : "neutral";
+        const selectedAnswer = question.answers.find(function (answer) { return answer.value === answers[currentIndex]; });
         const counterpointCard = document.getElementById("counterpoint-card");
         const counterpointLabel = document.getElementById("counterpoint-label");
         counterpointCard.dataset.challenge = challengeSide;
         counterpointLabel.textContent = challengeSide === "eternal" ? "Argumento do Elo Eterno" : challengeSide === "fatalist" ? "Argumento Fatalista" : "Uma objeção à indecisão";
-        document.getElementById("counterpoint-text").textContent = counterpoints[question.axis][side];
-        const selectedAnswer = question.answers.find(function (answer) { return answer.value === answers[currentIndex]; });
+        document.getElementById("counterpoint-text").textContent = debateCase.challenge[side];
         const choiceEcho = document.getElementById("choice-echo");
         choiceEcho.dataset.pole = side;
         document.getElementById("choice-echo-text").textContent = selectedAnswer.text;
@@ -1441,7 +1660,12 @@
         debateNextButton.disabled = debateResponses[currentIndex] === null;
         rebuttalList.replaceChildren();
 
-        rebuttals[side].forEach(function (rebuttal, rebuttalIndex) {
+        const rebuttals = [
+          { style: "reconsider", text: debateCase.replies.reconsider },
+          { style: "condition", text: debateCase.replies.condition },
+          { style: "defend", text: debateCase.replies.defend[side] }
+        ];
+        rebuttals.forEach(function (rebuttal, rebuttalIndex) {
           const button = document.createElement("button");
           button.type = "button";
           button.className = "answer debate-answer";
